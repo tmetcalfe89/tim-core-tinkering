@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "${modId}",
+  "version": "${modCobblemonVersion}-fabric-${modMyVersion}",
+  "name": "${modName}",
+  "description": "${modDescription}",
+  "authors": [
+    "${modAuthor}"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "us.timinc.mc.cobblemon.timcore.fabric.TimCoreFabric"
+      }
+    ]
+  },
+  "depends": {
+    "java": ">=21",
+    "minecraft": "${minecraft_version}",
+    "fabric": "*",
+    "cobblemon": "${cobblemon_version}"
+  },
+  "contact": {
+    "homepage": "${modDiscord}",
+    "issues": "${modIssues}",
+    "sources": "${modSource}"
+  },
+  "icon": "${modId}_small.png"
+}
