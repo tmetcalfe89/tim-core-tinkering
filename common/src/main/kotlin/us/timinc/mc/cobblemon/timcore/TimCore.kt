@@ -2,7 +2,7 @@ package us.timinc.mc.cobblemon.timcore
 
 import us.timinc.mc.cobblemon.timcore.api.config.SimpleJsonConfig
 
-object TimCore : AbstractMod("tim_core") {
+object TimCore : AbstractMod(MOD_ID) {
     class MainConfig {
         val option: String = "howdy"
     }
