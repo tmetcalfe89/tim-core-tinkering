@@ -29,7 +29,7 @@ side = "BOTH"
 
 [[dependencies.${modId}]]
 modId = "cobblemon"
-mandatory = true
-versionRange = "[${cobblemon_version}]"
+mandatory = false
+versionRange = "[${cobblemon_version},)"
 ordering = "AFTER"
 side = "BOTH"
