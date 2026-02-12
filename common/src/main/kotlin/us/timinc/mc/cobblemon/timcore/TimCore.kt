@@ -9,7 +9,7 @@ object TimCore : AbstractMod(MOD_ID) {
     }
 
     object Configs {
-        val mainConfig = registerConfig(SimpleJsonConfig(modId, "main", MainConfig::class.java))
+        val mainConfig = registerConfig(SimpleJsonConfig.create<MainConfig>(this@TimCore, MAIN_CONFIG_NAME))
     }
 
     override fun initialize() {

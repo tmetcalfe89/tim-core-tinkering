@@ -1,22 +1,55 @@
 package us.timinc.mc.cobblemon.timcore.api.config
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import com.google.gson.GsonBuilder
+import dev.vishna.watchservice.KWatchChannel
+import dev.vishna.watchservice.asWatchChannel
+import kotlinx.coroutines.channels.consumeEach
+import us.timinc.mc.cobblemon.timcore.api.mod.AbstractMod
 import java.io.File
-import java.io.FileReader
-import java.io.PrintWriter
+import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicReference
 
 class SimpleJsonConfig<T>(
-    override val modId: String,
-    val path: String,
+    override val mod: AbstractMod,
+    path: String,
     val clazz: Class<T>,
     val defaultValue: String = "{}"
 ) : Config<T> {
-    private var _values: T? = null
+    companion object {
+        inline fun <reified T> create(mod: AbstractMod, path: String, defaultValue: String = "{}") =
+            SimpleJsonConfig(mod, path, T::class.java, defaultValue)
+    }
+
+    private val _values: AtomicReference<T?> = AtomicReference(null)
+    private val configFile: File = File("config/${mod.modId}/$path.json")
+    private val lastWriteTime = AtomicLong(0L)
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     override val values: T
         get() {
-            if (_values == null) reload()
-            return _values!!
+            if (_values.get() == null) reload()
+            return _values.get()!!
         }
+
+    init {
+        val watchChannel = configFile.asWatchChannel(KWatchChannel.Mode.SingleFile)
+        scope.launch {
+            watchChannel.consumeEach {
+                val now = System.currentTimeMillis()
+                if (now - lastWriteTime.get() > 500) {
+                    _values.set(null)
+                }
+            }
+        }
+    }
+
+    fun close() {
+        scope.cancel()
+    }
 
     override fun reload() {
         val gson = GsonBuilder()
@@ -25,24 +58,29 @@ class SimpleJsonConfig<T>(
             .create()
 
         var config = gson.fromJson(defaultValue, clazz)
-        val configFile = File("config/$modId/$path.json")
-        configFile.parentFile.mkdirs()
+        configFile.parentFile?.mkdirs()
 
         if (configFile.exists()) {
-            try {
-                val fileReader = FileReader(configFile)
-                config = gson.fromJson(fileReader, clazz)
-                fileReader.close()
-            } catch (e: Exception) {
+            runCatching {
+                val text = configFile.readText()
+                gson.fromJson(text, clazz)
+            }.onSuccess { parsed ->
+                if (parsed != null) config = parsed
+            }.onFailure {
                 println("Error reading config file")
-                e.printStackTrace()
+                it.printStackTrace()
             }
         }
 
-        val pw = PrintWriter(configFile)
-        gson.toJson(config, pw)
-        pw.close()
+        val json = gson.toJson(config)
+        runCatching {
+            configFile.writeText(json)
+            lastWriteTime.set(System.currentTimeMillis())
+        }.onFailure {
+            println("Error writing config file")
+            it.printStackTrace()
+        }
 
-        _values = config
+        _values.set(config)
     }
 }

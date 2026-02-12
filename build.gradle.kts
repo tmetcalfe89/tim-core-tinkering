@@ -21,6 +21,11 @@ allprojects {
         maven("https://maven.neoforged.net/releases")
         maven("https://thedarkcolour.github.io/KotlinForForge/")
         maven("https://api.modrinth.com/maven")
+        maven("https://jitpack.io")
+    }
+
+    dependencies {
+        implementation("com.github.vishna:watchservice-ktx:master-SNAPSHOT")
     }
 
     tasks.getByName<Test>("test") {
