@@ -1,7 +1,9 @@
 package us.timinc.mc.cobblemon.timcore.api.config
 
+import us.timinc.mc.cobblemon.timcore.api.mod.AbstractMod
+
 interface Config<T> {
-    val modId: String
+    val mod: AbstractMod
     val values: T
 
     fun reload()
