@@ -1,4 +1,4 @@
-package us.timinc.mc.cobblemon.timcore
+package us.timinc.mc.cobblemon.timcore.api.mod
 
 import us.timinc.mc.cobblemon.timcore.api.config.Config
 

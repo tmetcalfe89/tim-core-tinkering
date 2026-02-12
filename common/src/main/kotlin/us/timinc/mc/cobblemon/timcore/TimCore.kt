@@ -1,6 +1,7 @@
 package us.timinc.mc.cobblemon.timcore
 
 import us.timinc.mc.cobblemon.timcore.api.config.SimpleJsonConfig
+import us.timinc.mc.cobblemon.timcore.api.mod.AbstractMod
 
 object TimCore : AbstractMod(MOD_ID) {
     class MainConfig {

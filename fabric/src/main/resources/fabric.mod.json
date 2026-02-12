@@ -20,8 +20,10 @@
   "depends": {
     "java": ">=21",
     "minecraft": "${minecraft_version}",
-    "fabric": "*",
-    "cobblemon": "${cobblemon_version}"
+    "fabric": "*"
+  },
+  "conflicts": {
+    "cobblemon": "<${cobblemon_version}"
   },
   "contact": {
     "homepage": "${modDiscord}",
