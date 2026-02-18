@@ -18,6 +18,8 @@ loom {
     }
 }
 val shadowCommon = configurations.create("shadowCommon")
+shadowCommon.isCanBeConsumed = false
+shadowCommon.isCanBeResolved = true
 
 dependencies {
     minecraft("com.mojang:minecraft:${property("minecraft_version")}")
@@ -35,8 +37,13 @@ dependencies {
     "developmentFabric"(project(":common", configuration = "namedElements"))
     shadowCommon(project(":common", configuration = "transformProductionFabric"))
 
+    // Ensure common's external runtime deps are included in the platform shadow
+    shadowCommon("com.github.vishna:watchservice-ktx:master-SNAPSHOT")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junit_version")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junit_version")}")
+    implementation("com.github.vishna:watchservice-ktx:master-SNAPSHOT")
+    shadow("com.github.vishna:watchservice-ktx:master-SNAPSHOT")
 }
 
 tasks.getByName<Test>("test") {
