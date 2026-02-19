@@ -1,7 +1,7 @@
 package us.timinc.mc.timcore.api.logging
 
 object LoggerScope {
-    private val stackTL = ThreadLocal<ArrayDeque<Logger>>()
+    val stackTL = ThreadLocal<ArrayDeque<Logger>>()
 
     fun currentOrNull(): Logger? =
         stackTL.get()?.lastOrNull()
@@ -9,10 +9,10 @@ object LoggerScope {
     fun current(): Logger =
         currentOrNull() ?: Logger("fallback")
 
-    fun <T> withLogger(
+    inline fun withLogger(
         logger: Logger,
-        block: () -> T,
-    ): T {
+        block: () -> Unit,
+    ) {
         val stack = stackTL.get() ?: ArrayDeque<Logger>().also(stackTL::set)
         stack.addLast(logger)
 

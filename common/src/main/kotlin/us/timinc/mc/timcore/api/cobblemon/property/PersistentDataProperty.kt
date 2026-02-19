@@ -118,10 +118,23 @@ object PersistentDataProperty {
             pokemonMatcher(entity.pokemon, value)
     }
 
-    class String private constructor(val modId: kotlin.String, val examples: Set<kotlin.String>, override val keys: Iterable<kotlin.String>) :
+    class String private constructor(
+        val modId: kotlin.String,
+        val examples: Set<kotlin.String>,
+        override val keys: Iterable<kotlin.String>
+    ) :
         CustomPokemonPropertyType<StringProperty> {
-        constructor(mod: AbstractMod<*>, examples: Set<kotlin.String>, vararg keys: kotlin.String) : this(mod.modId, examples, keys.toList())
-        constructor(modId: kotlin.String, examples: Set<kotlin.String>, vararg keys: kotlin.String) : this(modId, examples, keys.toList())
+        constructor(mod: AbstractMod<*>, examples: Set<kotlin.String>, vararg keys: kotlin.String) : this(
+            mod.modId,
+            examples,
+            keys.toList()
+        )
+
+        constructor(modId: kotlin.String, examples: Set<kotlin.String>, vararg keys: kotlin.String) : this(
+            modId,
+            examples,
+            keys.toList()
+        )
 
         override val needsKey: kotlin.Boolean = true
 

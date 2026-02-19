@@ -1,5 +1,7 @@
 package us.timinc.mc.timcore.api.logging
 
+import java.util.*
+
 @Suppress("unused")
 class Logger(
     val path: List<String>,
@@ -24,6 +26,8 @@ class Logger(
         subPath: String,
         getLevel: (() -> LogLevel)? = null
     ): Logger = makeSubLogger(listOf(subPath), getLevel)
+
+    fun makeCaseLogger() = makeSubLogger(UUID.randomUUID().toString())
 
     fun log(logLevel: LogLevel, msg: String) {
         if (logLevel.level > getLevel().level) return

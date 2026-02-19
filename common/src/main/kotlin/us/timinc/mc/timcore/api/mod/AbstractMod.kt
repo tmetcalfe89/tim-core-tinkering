@@ -13,7 +13,7 @@ abstract class AbstractMod<C : ModConfig>(val modId: String, configClass: KClass
     private val features: MutableList<AbstractFeature<*, *>> = mutableListOf()
     lateinit var platformBits: PlatformBits
 
-    fun <C : FeatureConfig, M: AbstractMod<*>, F : AbstractFeature<M, C>> registerFeature(
+    fun <C : FeatureConfig, M : AbstractMod<*>, F : AbstractFeature<M, C>> registerFeature(
         feature: F
     ): F {
         features += feature
