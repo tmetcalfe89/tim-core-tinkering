@@ -24,10 +24,6 @@ allprojects {
         maven("https://jitpack.io")
     }
 
-    dependencies {
-        implementation("com.github.vishna:watchservice-ktx:master-SNAPSHOT")
-    }
-
     tasks.getByName<Test>("test") {
         useJUnitPlatform()
     }

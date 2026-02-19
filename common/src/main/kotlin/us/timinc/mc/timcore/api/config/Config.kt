@@ -1,35 +1,31 @@
-package us.timinc.mc.cobblemon.timcore.api.config
+package us.timinc.mc.timcore.api.config
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import com.google.gson.GsonBuilder
 import dev.vishna.watchservice.KWatchChannel
 import dev.vishna.watchservice.asWatchChannel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.consumeEach
-import us.timinc.mc.cobblemon.timcore.api.mod.AbstractMod
+import us.timinc.mc.timcore.api.mod.AbstractMod
 import java.io.File
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 
-class SimpleJsonConfig<T>(
-    override val mod: AbstractMod,
+class Config<T>(
+    val mod: AbstractMod<*>,
     path: String,
     val clazz: Class<T>,
     val defaultValue: String = "{}"
-) : Config<T> {
+) {
     companion object {
-        inline fun <reified T> create(mod: AbstractMod, path: String, defaultValue: String = "{}") =
-            SimpleJsonConfig(mod, path, T::class.java, defaultValue)
+        inline fun <reified T> create(mod: AbstractMod<*>, path: String, defaultValue: String = "{}") =
+            Config(mod, path, T::class.java, defaultValue)
     }
 
     private val _values: AtomicReference<T?> = AtomicReference(null)
     private val configFile: File = File("config/${mod.modId}/$path.json")
     private val lastWriteTime = AtomicLong(0L)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    override val values: T
+    val values: T
         get() {
             if (_values.get() == null) reload()
             return _values.get()!!
@@ -51,7 +47,7 @@ class SimpleJsonConfig<T>(
         scope.cancel()
     }
 
-    override fun reload() {
+    fun reload() {
         val gson = GsonBuilder()
             .setPrettyPrinting()
             .setLenient()
