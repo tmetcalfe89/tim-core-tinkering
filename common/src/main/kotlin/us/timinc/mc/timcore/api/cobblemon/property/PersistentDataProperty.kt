@@ -25,7 +25,7 @@ object PersistentDataProperty {
 
         override fun fromString(value: kotlin.String?) = BooleanProperty(
             keys.first(),
-            listOf("yes", "true").contains(value),
+            value == null ||listOf("yes", "true").contains(value),
             ::pokemonApplicator,
             ::entityApplicator,
             ::pokemonMatcher,
