@@ -2,6 +2,8 @@ package us.timinc.mc.timcore.api.feature
 
 import us.timinc.mc.timcore.api.config.Config
 import us.timinc.mc.timcore.api.context.OperationContext
+import us.timinc.mc.timcore.api.event.Priority
+import us.timinc.mc.timcore.api.event.TimCoreEvents
 import us.timinc.mc.timcore.api.logging.Logger
 import us.timinc.mc.timcore.api.logging.LoggerScope
 import us.timinc.mc.timcore.api.mod.AbstractMod
@@ -20,16 +22,27 @@ abstract class AbstractFeature<M : AbstractMod<*>, C : FeatureConfig>(
     }
 
     val config: Config<C> = Config(mod, name, configClass.java)
-    val logger: Logger = mod.logger.makeSubLogger(name, { config.values.debugLevel })
+    val logger: Logger = mod.logger.makeSubLogger(listOf("feature", name)) { config.values.debugLevel }
 
     abstract fun initialize()
 
     fun init() {
-        if (!config.values.enabled) return
-        if (requiredMods.none(mod.platformBits::isModPresent)) return
+        if (!config.values.enabled) {
+            logger.warn("Not loading feature: Config has feature disabled.")
+            return
+        }
+        if (!requiredMods.any(mod.platformBits::isModPresent)) {
+            logger.warn("Not loading feature")
+            return
+        }
+        logger.sing("Loading feature.")
         initialize()
     }
 
     inline fun withOperationContext(action: FeatureOperationContext<C>.() -> Unit) =
         LoggerScope.withLogger(logger.makeCaseLogger(), { with(FeatureOperationContext(this), action) })
+
+    init {
+        TimCoreEvents.FEATURE_LOAD.subscribe(Priority.NORMAL) { init() }
+    }
 }

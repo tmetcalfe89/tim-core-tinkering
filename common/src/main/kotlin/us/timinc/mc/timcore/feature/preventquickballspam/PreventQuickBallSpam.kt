@@ -3,6 +3,7 @@ package us.timinc.mc.timcore.feature.preventquickballspam
 import com.cobblemon.mod.common.api.Priority
 import com.cobblemon.mod.common.api.events.CobblemonEvents
 import us.timinc.mc.timcore.TimCore
+import us.timinc.mc.timcore.api.cobblemon.CobblemonModule
 import us.timinc.mc.timcore.api.cobblemon.property.PersistentDataProperty
 import us.timinc.mc.timcore.api.feature.AbstractFeature
 import us.timinc.mc.timcore.api.feature.FeatureConfig
@@ -17,10 +18,13 @@ object PreventQuickBallSpam : AbstractFeature<TimCore, PreventQuickBallSpam.Conf
     class Config : FeatureConfig()
 
     object PokemonProperties {
-        val immuneToQuickBall = PersistentDataProperty.Boolean(TimCore, "immune_to_quick_ball")
+        val immuneToQuickBall =
+            CobblemonModule.registerCustomPokemonProperty(PersistentDataProperty.Boolean(TimCore, "immune_to_quick_ball"))
     }
 
     override fun initialize() {
+        PokemonProperties
+
         CobblemonEvents.POKEMON_CATCH_RATE.subscribe(Priority.LOWEST, QuickBallSpamCatchRate::handle)
     }
 }
