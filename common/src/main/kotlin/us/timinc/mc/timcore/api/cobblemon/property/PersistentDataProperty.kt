@@ -7,7 +7,9 @@ import com.cobblemon.mod.common.pokemon.properties.BooleanProperty
 import com.cobblemon.mod.common.pokemon.properties.FloatProperty
 import com.cobblemon.mod.common.pokemon.properties.IntProperty
 import com.cobblemon.mod.common.pokemon.properties.StringProperty
+import us.timinc.mc.timcore.api.cobblemon.extension.getIdentifier
 import us.timinc.mc.timcore.api.extension.*
+import us.timinc.mc.timcore.api.logging.LoggerScope
 import us.timinc.mc.timcore.api.mod.AbstractMod
 
 @Suppress("unused")
@@ -21,18 +23,28 @@ object PersistentDataProperty {
 
         override val needsKey: kotlin.Boolean = true
 
+        override fun toString() = "$modId:${keys.first()}"
+
         override fun examples(): Collection<kotlin.String> = setOf("yes", "no")
 
-        override fun fromString(value: kotlin.String?) = BooleanProperty(
-            keys.first(),
-            value == null ||listOf("yes", "true").contains(value),
-            ::pokemonApplicator,
-            ::entityApplicator,
-            ::pokemonMatcher,
-            ::entityMatcher
-        )
+        override fun fromString(value: kotlin.String?): BooleanProperty {
+            val logger = LoggerScope.current()
+            logger.sing("Parsing PersistentDataProperty.Boolean $this from string value $value.")
+            val actualValue = value == null || listOf("yes", "true").contains(value)
+            logger.sing("Parsed to $actualValue.")
+            return BooleanProperty(
+                keys.first(),
+                actualValue,
+                ::pokemonApplicator,
+                ::entityApplicator,
+                ::pokemonMatcher,
+                ::entityMatcher
+            )
+        }
 
         fun pokemonApplicator(pokemon: Pokemon, value: kotlin.Boolean) {
+            val logger = LoggerScope.current()
+            logger.sing("Applying PersistentDataProperty.Boolean $this as $value to ${pokemon.getIdentifier()}.")
             getModData(modId, pokemon).putBoolean(keys.first(), value)
         }
 
@@ -57,18 +69,28 @@ object PersistentDataProperty {
 
         override val needsKey: kotlin.Boolean = true
 
+        override fun toString() = "$modId:${keys.first()}"
+
         override fun examples(): Collection<kotlin.String> = (0..5).map { (it * 0.2).toString() }
 
-        override fun fromString(value: kotlin.String?) = FloatProperty(
-            keys.first(),
-            value?.toFloat() ?: 0F,
-            ::pokemonApplicator,
-            ::entityApplicator,
-            ::pokemonMatcher,
-            ::entityMatcher
-        )
+        override fun fromString(value: kotlin.String?): FloatProperty {
+            val logger = LoggerScope.current()
+            logger.sing("Parsing PersistentDataProperty.Float $this from string value $value.")
+            val actualValue = value?.toFloat() ?: 0F
+            logger.sing("Parsed to $actualValue.")
+            return FloatProperty(
+                keys.first(),
+                actualValue,
+                ::pokemonApplicator,
+                ::entityApplicator,
+                ::pokemonMatcher,
+                ::entityMatcher
+            )
+        }
 
         fun pokemonApplicator(pokemon: Pokemon, value: kotlin.Float) {
+            val logger = LoggerScope.current()
+            logger.sing("Applying PersistentDataProperty.Float $this as $value to ${pokemon.getIdentifier()}.")
             getModData(modId, pokemon).putFloat(keys.first(), value)
         }
 
@@ -91,18 +113,28 @@ object PersistentDataProperty {
 
         override val needsKey: kotlin.Boolean = true
 
+        override fun toString() = "$modId:${keys.first()}"
+
         override fun examples(): Collection<kotlin.String> = (0..5).map { (it * 20).toString() }
 
-        override fun fromString(value: kotlin.String?) = IntProperty(
-            keys.first(),
-            value?.toInt() ?: 0,
-            ::pokemonApplicator,
-            ::entityApplicator,
-            ::pokemonMatcher,
-            ::entityMatcher
-        )
+        override fun fromString(value: kotlin.String?): IntProperty {
+            val logger = LoggerScope.current()
+            logger.sing("Parsing PersistentDataProperty.Int $this from string value $value.")
+            val actualValue = value?.toInt() ?: 0
+            logger.sing("Parsed to $actualValue.")
+            return IntProperty(
+                keys.first(),
+                actualValue,
+                ::pokemonApplicator,
+                ::entityApplicator,
+                ::pokemonMatcher,
+                ::entityMatcher
+            )
+        }
 
         fun pokemonApplicator(pokemon: Pokemon, value: kotlin.Int) {
+            val logger = LoggerScope.current()
+            logger.sing("Applying PersistentDataProperty.Int $this from string value $value.")
             getModData(modId, pokemon).putInt(keys.first(), value)
         }
 
@@ -138,16 +170,26 @@ object PersistentDataProperty {
 
         override val needsKey: kotlin.Boolean = true
 
+        override fun toString() = "$modId:${keys.first()}"
+
         override fun examples(): Collection<kotlin.String> = (0..5).map { (it * 20).toString() }
 
-        override fun fromString(value: kotlin.String?) = StringProperty(
-            keys.first(),
-            value ?: "",
-            ::pokemonApplicator,
-            ::pokemonMatcher,
-        )
+        override fun fromString(value: kotlin.String?): StringProperty {
+            val logger = LoggerScope.current()
+            logger.sing("Parsing PersistentDataProperty.String $this from string value $value.")
+            val actualValue = value ?: ""
+            logger.sing("Parsed to $actualValue.")
+            return StringProperty(
+                keys.first(),
+                actualValue,
+                ::pokemonApplicator,
+                ::pokemonMatcher,
+            )
+        }
 
         fun pokemonApplicator(pokemon: Pokemon, value: kotlin.String) {
+            val logger = LoggerScope.current()
+            logger.sing("Applying PersistentDataProperty.String $this from string value $value.")
             getModData(modId, pokemon).putString(keys.first(), value)
         }
 
