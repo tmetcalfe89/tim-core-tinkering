@@ -6,9 +6,8 @@ import com.mojang.serialization.Codec
 object Codec {
     val INT_RANGE_CODEC: Codec<IntRange> = Codec.STRING.xmap(
         { str ->
-            val (start, end) = str.split("..")
-
             try {
+                val (start, end) = str.split("..")
                 val actualStart = when (start.lowercase()) {
                     "min" -> Int.MIN_VALUE
                     else -> start.toInt()
@@ -19,7 +18,7 @@ object Codec {
                 }
                 actualStart..actualEnd
             } catch (e: NumberFormatException) {
-                throw IllegalArgumentException("'$start' and/or '$end' is/are not integers", e)
+                throw IllegalArgumentException("Invalid integer range $str", e)
             }
         },
         { it.toString() }
@@ -27,9 +26,8 @@ object Codec {
 
     val FLOAT_RANGE_CODEC: Codec<ClosedFloatingPointRange<Float>> = Codec.STRING.xmap(
         { str ->
-            val (start, end) = str.split("..")
-
             try {
+                val (start, end) = str.split("..")
                 val actualStart = when (start.lowercase()) {
                     "min" -> Float.MIN_VALUE
                     else -> start.toFloat()
@@ -40,7 +38,7 @@ object Codec {
                 }
                 actualStart..actualEnd
             } catch (e: NumberFormatException) {
-                throw IllegalArgumentException("'$start' and/or '$end' is/are not floats", e)
+                throw IllegalArgumentException("Invalid float range $str", e)
             }
         },
         { it.toString() }
