@@ -5,6 +5,8 @@ import dev.vishna.watchservice.KWatchChannel
 import dev.vishna.watchservice.asWatchChannel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.consumeEach
+import us.timinc.mc.timcore.api.logging.Logger
+import us.timinc.mc.timcore.api.logging.LoggerScope
 import us.timinc.mc.timcore.api.mod.AbstractMod
 import java.io.File
 import java.util.concurrent.atomic.AtomicLong
@@ -12,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 class Config<T>(
     val mod: AbstractMod<*>,
-    path: String,
+    val path: String,
     val clazz: Class<T>,
     val defaultValue: String = "{}"
 ) {
@@ -34,47 +36,59 @@ class Config<T>(
         }
 
     fun reload() {
-        watcherJob?.cancel()
+        LoggerScope.withLogger(Logger("config").makeSubLogger(configFile.path)) {
+            val logger = LoggerScope.current()
+            logger.sing("Reloading config.")
 
-        val gson = GsonBuilder()
-            .setPrettyPrinting()
-            .setLenient()
-            .create()
-
-        var config = gson.fromJson(defaultValue, clazz)
-        configFile.parentFile?.mkdirs()
-
-        if (configFile.exists()) {
-            runCatching {
-                val text = configFile.readText()
-                gson.fromJson(text, clazz)
-            }.onSuccess { parsed ->
-                if (parsed != null) config = parsed
-            }.onFailure {
-                println("Error reading config file")
-                it.printStackTrace()
+            watcherJob?.let {
+                it.cancel()
+                logger.sing("Shutting down existing file watcher job.")
             }
-        }
 
-        val json = gson.toJson(config)
-        runCatching {
-            configFile.writeText(json)
-            lastWriteTime.set(System.currentTimeMillis())
-        }.onFailure {
-            println("Error writing config file")
-            it.printStackTrace()
-        }
+            val gson = GsonBuilder()
+                .setPrettyPrinting()
+                .setLenient()
+                .create()
 
-        _values.set(config)
-        
-        val watchChannel = configFile.asWatchChannel(KWatchChannel.Mode.SingleFile)
-        watcherJob = scope.launch {
-            watchChannel.consumeEach {
-                val now = System.currentTimeMillis()
-                if (now - lastWriteTime.get() > 500) {
-                    _values.set(null)
-                    watchChannel.cancel()
-                    this.cancel()
+            var config = gson.fromJson(defaultValue, clazz)
+            configFile.parentFile?.mkdirs()
+
+            if (configFile.exists()) {
+                runCatching {
+                    val text = configFile.readText()
+                    gson.fromJson(text, clazz)
+                }.onSuccess { parsed ->
+                    if (parsed != null) config = parsed
+                    logger.sing("Loaded config from file.")
+                }.onFailure {
+                    logger.alert("Error reading config file.")
+                    it.printStackTrace()
+                }
+            }
+
+            val json = gson.toJson(config)
+            runCatching {
+                configFile.writeText(json)
+                lastWriteTime.set(System.currentTimeMillis())
+                logger.sing("Config file updated.")
+            }.onFailure {
+                logger.alert("Error writing config file")
+                logger.alert(it.stackTraceToString())
+            }
+
+            _values.set(config)
+
+            val watchChannel = configFile.asWatchChannel(KWatchChannel.Mode.SingleFile)
+            watcherJob = scope.launch {
+                logger.sing("Starting watcher.")
+                watchChannel.consumeEach {
+                    val now = System.currentTimeMillis()
+                    if (now - lastWriteTime.get() > 500) {
+                        logger.sing("File updated, invalidating loaded data for reload.")
+                        _values.set(null)
+                        watchChannel.cancel()
+                        this.cancel()
+                    }
                 }
             }
         }
