@@ -3,6 +3,7 @@ package us.timinc.mc.timcore
 import us.timinc.mc.timcore.api.event.TimCoreEvents
 import us.timinc.mc.timcore.api.mod.AbstractMod
 import us.timinc.mc.timcore.api.mod.ModConfig
+import us.timinc.mc.timcore.feature.customdroplogic.CustomDropLogic
 import us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam
 
 object TimCore : AbstractMod<TimCore.Config>(MOD_ID, Config::class) {
@@ -11,6 +12,7 @@ object TimCore : AbstractMod<TimCore.Config>(MOD_ID, Config::class) {
     override fun initialize() {
         // Reference your features in the initialization of your mod to wake them up.
         PreventQuickBallSpam
+        CustomDropLogic
 
         // Don't worry about this, it's for Tim Core specifically.
         timCoreSpecificInit()

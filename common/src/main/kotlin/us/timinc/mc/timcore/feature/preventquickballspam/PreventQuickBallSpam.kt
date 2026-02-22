@@ -13,7 +13,7 @@ object PreventQuickBallSpam : AbstractFeature<TimCore, PreventQuickBallSpam.Conf
     TimCore,
     "prevent_quick_ball_spam",
     Config::class,
-    listOf("cobblemon")
+    listOf("cobblemon"),
 ) {
     class Config : FeatureConfig()
 
