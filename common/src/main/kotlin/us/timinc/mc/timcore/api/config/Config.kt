@@ -25,29 +25,21 @@ class Config<T>(
     private val configFile: File = File("config/${mod.modId}/$path.json")
     private val lastWriteTime = AtomicLong(0L)
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private var watcherJob: Job? = null
+
     val values: T
         get() {
             if (_values.get() == null) reload()
             return _values.get()!!
         }
 
-    init {
-        val watchChannel = configFile.asWatchChannel(KWatchChannel.Mode.SingleFile)
-        scope.launch {
-            watchChannel.consumeEach {
-                val now = System.currentTimeMillis()
-                if (now - lastWriteTime.get() > 500) {
-                    _values.set(null)
-                }
-            }
-        }
-    }
-
     fun close() {
         scope.cancel()
     }
 
     fun reload() {
+        watcherJob?.cancel()
+
         val gson = GsonBuilder()
             .setPrettyPrinting()
             .setLenient()
@@ -78,5 +70,17 @@ class Config<T>(
         }
 
         _values.set(config)
+        
+        val watchChannel = configFile.asWatchChannel(KWatchChannel.Mode.SingleFile)
+        watcherJob = scope.launch {
+            watchChannel.consumeEach {
+                val now = System.currentTimeMillis()
+                if (now - lastWriteTime.get() > 500) {
+                    _values.set(null)
+                    watchChannel.cancel()
+                    this.cancel()
+                }
+            }
+        }
     }
 }
