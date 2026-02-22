@@ -11,6 +11,7 @@ open class Event<T> {
     fun subscribe(priority: Priority, listener: (T) -> Unit) =
         subscribe(Subscription(priority, listener))
 
+    @Suppress("unused")
     open fun unsubscribe(subscription: Subscription<T>) {
         subscribers[subscription.priority.ordinal].remove(subscription)
     }
