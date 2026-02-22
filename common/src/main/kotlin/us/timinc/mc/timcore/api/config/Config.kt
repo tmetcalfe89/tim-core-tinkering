@@ -33,10 +33,6 @@ class Config<T>(
             return _values.get()!!
         }
 
-    fun close() {
-        scope.cancel()
-    }
-
     fun reload() {
         watcherJob?.cancel()
 
