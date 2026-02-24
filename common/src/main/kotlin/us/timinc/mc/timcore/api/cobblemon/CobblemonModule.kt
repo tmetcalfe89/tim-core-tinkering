@@ -6,7 +6,6 @@ import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
 import com.cobblemon.mod.common.api.properties.CustomPokemonPropertyType
 import us.timinc.mc.timcore.TimCore
 import us.timinc.mc.timcore.api.event.OneTimeEvent
-import us.timinc.mc.timcore.api.event.Priority
 import us.timinc.mc.timcore.api.module.AbstractModule
 
 /**
@@ -37,7 +36,7 @@ object CobblemonModule : AbstractModule<TimCore>(TimCore, "cobblemon") {
 
     override fun init() {
         logger.sing("Listening for Cobblemon to load to do setup.")
-        Events.COBBLEMON_INITIALIZED.subscribe(Priority.NORMAL) {
+        Events.COBBLEMON_INITIALIZED.subscribe {
             logger.sing("Registering ${customPokemonProperties.size} custom pokemon properties: ${customPokemonProperties.map { it.keys.first() }}")
             for (prop in customPokemonProperties) {
                 CustomPokemonProperty.register(prop)

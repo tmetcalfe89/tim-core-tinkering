@@ -2,7 +2,6 @@ package us.timinc.mc.timcore.api.feature
 
 import us.timinc.mc.timcore.api.config.Config
 import us.timinc.mc.timcore.api.context.OperationContext
-import us.timinc.mc.timcore.api.event.Priority
 import us.timinc.mc.timcore.api.event.TimCoreEvents
 import us.timinc.mc.timcore.api.logging.Logger
 import us.timinc.mc.timcore.api.logging.LoggerScope
@@ -43,6 +42,6 @@ abstract class AbstractFeature<M : AbstractMod<*>, C : FeatureConfig>(
         LoggerScope.withLogger(logger.makeCaseLogger()) { with(FeatureOperationContext(this), action) }
 
     init {
-        TimCoreEvents.FEATURE_LOAD.subscribe(Priority.NORMAL) { init() }
+        TimCoreEvents.FEATURE_LOAD.subscribe { init() }
     }
 }
