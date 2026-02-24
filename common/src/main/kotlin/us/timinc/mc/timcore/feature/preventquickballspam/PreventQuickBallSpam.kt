@@ -17,7 +17,13 @@ object PreventQuickBallSpam : AbstractFeature<TimCore, PreventQuickBallSpam.Conf
 ) {
     class Config : FeatureConfig()
 
+    /**
+     * @see PersistentDataProperty
+     */
     object PokemonProperties {
+        /**
+         * @see PersistentDataProperty.Boolean
+         */
         val immuneToQuickBall =
             CobblemonModule.registerCustomPokemonProperty(PersistentDataProperty.Boolean(TimCore, "immune_to_quick_ball"))
     }

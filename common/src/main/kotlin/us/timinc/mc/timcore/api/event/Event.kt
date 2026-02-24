@@ -1,5 +1,8 @@
 package us.timinc.mc.timcore.api.event
 
+/**
+ * An event. You can subscribe to it, adding a callback to its list of listeners, with an optional priority.
+ */
 open class Event<T> {
     val subscribers = Array(Priority.entries.size) { LinkedHashSet<Subscription<T>>() }
 

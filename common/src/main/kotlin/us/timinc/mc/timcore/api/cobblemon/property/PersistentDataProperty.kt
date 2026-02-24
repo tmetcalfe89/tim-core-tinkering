@@ -8,14 +8,28 @@ import com.cobblemon.mod.common.pokemon.properties.FloatProperty
 import com.cobblemon.mod.common.pokemon.properties.IntProperty
 import com.cobblemon.mod.common.pokemon.properties.StringProperty
 import us.timinc.mc.timcore.api.cobblemon.extension.getIdentifier
-import us.timinc.mc.timcore.api.extension.*
+import us.timinc.mc.timcore.api.cobblemon.extension.getModPersistentData
+import us.timinc.mc.timcore.api.extension.getBooleanOrNull
+import us.timinc.mc.timcore.api.extension.getFloatOrNull
+import us.timinc.mc.timcore.api.extension.getIntOrNull
+import us.timinc.mc.timcore.api.extension.getStringOrNull
 import us.timinc.mc.timcore.api.logging.LoggerScope
 import us.timinc.mc.timcore.api.mod.AbstractMod
 
-@Suppress("unused")
+/**
+ * A collection of custom Pokémon properties whose values are stored in the Pokémon's persistent data, in a compound
+ * tag keyed to the mod's ID.
+ *
+ * @author Timothy Metcalfe
+ * @sample us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam.PokemonProperties
+ */
 object PersistentDataProperty {
-    fun getModData(modId: kotlin.String, pokemon: Pokemon) = pokemon.persistentData.getOrPutCompound(modId)
-
+    /**
+     * A Boolean value backed by a Pokémon's persistent data.
+     *
+     * @author Timothy Metcalfe
+     * @sample us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam.PokemonProperties
+     */
     class Boolean private constructor(val modId: kotlin.String, override val keys: Iterable<kotlin.String>) :
         CustomPokemonPropertyType<BooleanProperty> {
         constructor(mod: AbstractMod<*>, vararg keys: kotlin.String) : this(mod.modId, keys.toList())
@@ -23,7 +37,7 @@ object PersistentDataProperty {
 
         override val needsKey: kotlin.Boolean = true
 
-        override fun toString() = "$modId:${keys.first()}"
+        override fun toString(): kotlin.String = "$modId:${keys.first()}"
 
         override fun examples(): Collection<kotlin.String> = setOf("yes", "no")
 
@@ -45,14 +59,14 @@ object PersistentDataProperty {
         fun pokemonApplicator(pokemon: Pokemon, value: kotlin.Boolean) {
             val logger = LoggerScope.current()
             logger.sing("Applying PersistentDataProperty.Boolean $this as $value to ${pokemon.getIdentifier()}.")
-            getModData(modId, pokemon).putBoolean(keys.first(), value)
+            pokemon.getModPersistentData(modId).putBoolean(keys.first(), value)
         }
 
         fun entityApplicator(entity: PokemonEntity, value: kotlin.Boolean) {
             pokemonApplicator(entity.pokemon, value)
         }
 
-        fun getValue(pokemon: Pokemon) = getModData(modId, pokemon).let { modData ->
+        fun getValue(pokemon: Pokemon): kotlin.Boolean = pokemon.getModPersistentData(modId).let { modData ->
             modData.contains(keys.first()) && (modData.getBooleanOrNull(keys.first()) == true)
         }
 
@@ -62,6 +76,11 @@ object PersistentDataProperty {
             pokemonMatcher(entity.pokemon, value)
     }
 
+    /**
+     * A Float value backed by a Pokémon's persistent data.
+     *
+     * @author Timothy Metcalfe
+     */
     class Float private constructor(val modId: kotlin.String, override val keys: Iterable<kotlin.String>) :
         CustomPokemonPropertyType<FloatProperty> {
         constructor(mod: AbstractMod<*>, vararg keys: kotlin.String) : this(mod.modId, keys.toList())
@@ -69,7 +88,7 @@ object PersistentDataProperty {
 
         override val needsKey: kotlin.Boolean = true
 
-        override fun toString() = "$modId:${keys.first()}"
+        override fun toString(): kotlin.String = "$modId:${keys.first()}"
 
         override fun examples(): Collection<kotlin.String> = (0..5).map { (it * 0.2).toString() }
 
@@ -91,14 +110,14 @@ object PersistentDataProperty {
         fun pokemonApplicator(pokemon: Pokemon, value: kotlin.Float) {
             val logger = LoggerScope.current()
             logger.sing("Applying PersistentDataProperty.Float $this as $value to ${pokemon.getIdentifier()}.")
-            getModData(modId, pokemon).putFloat(keys.first(), value)
+            pokemon.getModPersistentData(modId).putFloat(keys.first(), value)
         }
 
         fun entityApplicator(entity: PokemonEntity, value: kotlin.Float) {
             pokemonApplicator(entity.pokemon, value)
         }
 
-        fun getValue(pokemon: Pokemon): kotlin.Float? = getModData(modId, pokemon).getFloatOrNull(keys.first())
+        fun getValue(pokemon: Pokemon): kotlin.Float? = pokemon.getModPersistentData(modId).getFloatOrNull(keys.first())
 
         fun pokemonMatcher(pokemon: Pokemon, value: kotlin.Float): kotlin.Boolean = getValue(pokemon) == value
 
@@ -106,6 +125,11 @@ object PersistentDataProperty {
             pokemonMatcher(entity.pokemon, value)
     }
 
+    /**
+     * An Int value backed by a Pokémon's persistent data.
+     *
+     * @author Timothy Metcalfe
+     */
     class Int private constructor(val modId: kotlin.String, override val keys: Iterable<kotlin.String>) :
         CustomPokemonPropertyType<IntProperty> {
         constructor(mod: AbstractMod<*>, vararg keys: kotlin.String) : this(mod.modId, keys.toList())
@@ -135,14 +159,14 @@ object PersistentDataProperty {
         fun pokemonApplicator(pokemon: Pokemon, value: kotlin.Int) {
             val logger = LoggerScope.current()
             logger.sing("Applying PersistentDataProperty.Int $this from string value $value.")
-            getModData(modId, pokemon).putInt(keys.first(), value)
+            pokemon.getModPersistentData(modId).putInt(keys.first(), value)
         }
 
         fun entityApplicator(entity: PokemonEntity, value: kotlin.Int) {
             pokemonApplicator(entity.pokemon, value)
         }
 
-        fun getValue(pokemon: Pokemon): kotlin.Int? = getModData(modId, pokemon).getIntOrNull(keys.first())
+        fun getValue(pokemon: Pokemon): kotlin.Int? = pokemon.getModPersistentData(modId).getIntOrNull(keys.first())
 
         fun pokemonMatcher(pokemon: Pokemon, value: kotlin.Int): kotlin.Boolean = getValue(pokemon) == value
 
@@ -150,6 +174,11 @@ object PersistentDataProperty {
             pokemonMatcher(entity.pokemon, value)
     }
 
+    /**
+     * A String value backed by a Pokémon's persistent data.
+     *
+     * @author Timothy Metcalfe
+     */
     class String private constructor(
         val modId: kotlin.String,
         val examples: Set<kotlin.String>,
@@ -172,7 +201,7 @@ object PersistentDataProperty {
 
         override fun toString() = "$modId:${keys.first()}"
 
-        override fun examples(): Collection<kotlin.String> = (0..5).map { (it * 20).toString() }
+        override fun examples(): Collection<kotlin.String> = examples
 
         override fun fromString(value: kotlin.String?): StringProperty {
             val logger = LoggerScope.current()
@@ -190,14 +219,14 @@ object PersistentDataProperty {
         fun pokemonApplicator(pokemon: Pokemon, value: kotlin.String) {
             val logger = LoggerScope.current()
             logger.sing("Applying PersistentDataProperty.String $this from string value $value.")
-            getModData(modId, pokemon).putString(keys.first(), value)
+            pokemon.getModPersistentData(modId).putString(keys.first(), value)
         }
 
         fun entityApplicator(entity: PokemonEntity, value: kotlin.String) {
             pokemonApplicator(entity.pokemon, value)
         }
 
-        fun getValue(pokemon: Pokemon): kotlin.String? = getModData(modId, pokemon).getStringOrNull(keys.first())
+        fun getValue(pokemon: Pokemon): kotlin.String? = pokemon.getModPersistentData(modId).getStringOrNull(keys.first())
 
         fun pokemonMatcher(pokemon: Pokemon, value: kotlin.String): kotlin.Boolean = getValue(pokemon) == value
 
