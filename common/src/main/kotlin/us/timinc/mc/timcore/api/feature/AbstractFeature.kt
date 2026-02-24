@@ -40,7 +40,7 @@ abstract class AbstractFeature<M : AbstractMod<*>, C : FeatureConfig>(
     }
 
     inline fun withOperationContext(action: FeatureOperationContext<C>.() -> Unit) =
-        LoggerScope.withLogger(logger.makeCaseLogger(), { with(FeatureOperationContext(this), action) })
+        LoggerScope.withLogger(logger.makeCaseLogger()) { with(FeatureOperationContext(this), action) }
 
     init {
         TimCoreEvents.FEATURE_LOAD.subscribe(Priority.NORMAL) { init() }

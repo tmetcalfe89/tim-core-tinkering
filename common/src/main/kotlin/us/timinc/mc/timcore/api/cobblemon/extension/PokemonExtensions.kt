@@ -11,4 +11,10 @@ import us.timinc.mc.timcore.api.extension.getOrPutCompound
  */
 fun Pokemon.getIdentifier() = with(this) { "${getDisplayName()}_$uuid" }
 
+/**
+ * Gets the persistent data from a Pokemon for a specific mod.
+ *
+ * @author Timothy Metcalfe
+ * @sample us.timinc.mc.timcore.api.cobblemon.property.PersistentDataProperty.Boolean.getValue
+ */
 fun Pokemon.getModPersistentData(modId: String) = this.persistentData.getOrPutCompound(modId)

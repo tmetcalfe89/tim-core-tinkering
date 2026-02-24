@@ -21,7 +21,7 @@ import us.timinc.mc.timcore.api.mod.AbstractMod
  * tag keyed to the mod's ID.
  *
  * @author Timothy Metcalfe
- * @sample us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam.PokemonProperties
+ * @sample us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam.PokemonProperties.immuneToQuickBall
  */
 object PersistentDataProperty {
     /**
