@@ -7,7 +7,7 @@ package us.timinc.mc.timcore.api.event
  * @author Timothy Metcalfe
  */
 open class Event<T> {
-    private val subscribers = Array(Priority.entries.size) { LinkedHashSet<Subscription<T>>() }
+    val subscribers = Array(Priority.entries.size) { LinkedHashSet<Subscription<T>>() }
 
     /**
      * Adds a new subscription and returns it.

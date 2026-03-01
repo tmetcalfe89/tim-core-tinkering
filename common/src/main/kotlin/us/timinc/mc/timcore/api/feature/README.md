@@ -1,5 +1,0 @@
-# Adding a Feature
-Features are kinda like mods, in that they're collections of bits added to the game, but they're smaller groups of those collections with a focused scope.
-Let's say you have a mod that adds in a new type of furnace, as well as a new type of crafting table. These are individual features of your mod; they don't need each other present to be functional necessarily, and if a player would like to turn one off, they should be able to.
-Features can also depend on other mods being present. For example, if I wanted to add that furnace mentioned in the above paragraph, but I also wanted certain Pokemon from the Cobblemon mod to be able to boost the speed of the furnace through some event listener I'd created on the furnace logic, and wanted that logic to be present in my mod, but only loaded if Cobblemon was present, I could add Cobblemon to the list of required mods for my `PokemonFurnaceSpeed` feature.
-# What a f

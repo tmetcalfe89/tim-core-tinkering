@@ -9,7 +9,7 @@
  * This file contains modifications from the original Cobblemon implementation.
  */
 
-package us.timinc.mc.timcore.feature.customdroplogic.dropentry
+package us.timinc.mc.timcore.feature.cobblemon.customdroplogic.dropentry
 
 import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.api.drop.DropEntry
@@ -30,7 +30,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.Vec3
 import us.timinc.mc.timcore.api.logging.LoggerScope
-import us.timinc.mc.timcore.feature.customdroplogic.CustomDropLogic
+import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.CustomDropLogic
 
 open class TagItemDropEntry : DropEntry {
     override var percentage: Float = 100F

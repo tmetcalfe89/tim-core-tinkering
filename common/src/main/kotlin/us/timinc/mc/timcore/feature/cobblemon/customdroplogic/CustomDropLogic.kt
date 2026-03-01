@@ -1,16 +1,16 @@
-package us.timinc.mc.timcore.feature.customdroplogic
+package us.timinc.mc.timcore.feature.cobblemon.customdroplogic
 
 import com.cobblemon.mod.common.api.drop.DropEntry
 import us.timinc.mc.timcore.TimCore
 import us.timinc.mc.timcore.api.feature.AbstractFeature
 import us.timinc.mc.timcore.api.feature.FeatureConfig
-import us.timinc.mc.timcore.feature.customdroplogic.dropentry.TagItemDropEntry
+import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.dropentry.TagItemDropEntry
 
 object CustomDropLogic : AbstractFeature<TimCore, CustomDropLogic.Config>(
     TimCore,
     "custom_drop_logic",
     Config::class,
-    listOf("cobblemon"),
+    setOf("cobblemon"),
 ) {
     class Config : FeatureConfig()
 

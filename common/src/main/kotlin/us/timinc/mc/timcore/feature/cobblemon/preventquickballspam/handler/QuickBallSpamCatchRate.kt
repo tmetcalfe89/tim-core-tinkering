@@ -1,10 +1,10 @@
-package us.timinc.mc.timcore.feature.preventquickballspam.handler
+package us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.handler
 
 import com.cobblemon.mod.common.api.events.pokeball.PokemonCatchRateEvent
 import com.cobblemon.mod.common.api.pokeball.PokeBalls
-import us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam
-import us.timinc.mc.timcore.feature.preventquickballspam.extension.isImmuneToQuickBall
-import us.timinc.mc.timcore.feature.preventquickballspam.extension.setImmuneToQuickBall
+import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam
+import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.extension.isImmuneToQuickBall
+import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.extension.setImmuneToQuickBall
 
 object QuickBallSpamCatchRate {
     fun handle(evt: PokemonCatchRateEvent) {

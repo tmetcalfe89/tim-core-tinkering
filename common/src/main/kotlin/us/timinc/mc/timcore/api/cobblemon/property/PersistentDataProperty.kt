@@ -21,14 +21,14 @@ import us.timinc.mc.timcore.api.mod.AbstractMod
  * tag keyed to the mod's ID.
  *
  * @author Timothy Metcalfe
- * @sample us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam.PokemonProperties.immuneToQuickBall
+ * @sample us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam.PokemonProperties.immuneToQuickBall
  */
 object PersistentDataProperty {
     /**
      * A Boolean value backed by a Pokémon's persistent data.
      *
      * @author Timothy Metcalfe
-     * @sample us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam.PokemonProperties
+     * @sample us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam.PokemonProperties
      */
     class Boolean private constructor(val modId: kotlin.String, override val keys: Iterable<kotlin.String>) :
         CustomPokemonPropertyType<BooleanProperty> {

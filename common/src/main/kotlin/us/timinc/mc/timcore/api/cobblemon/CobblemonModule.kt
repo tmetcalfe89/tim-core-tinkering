@@ -26,7 +26,7 @@ object CobblemonModule : AbstractModule<TimCore>(TimCore, "cobblemon") {
      * commands such as `pokeedit`, `pokespawn`, and `pokegive` (anything that uses PokemonProperties).
      *
      * @author Timothy Metcalfe
-     * @sample us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam.PokemonProperties.immuneToQuickBall
+     * @sample us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam.PokemonProperties.immuneToQuickBall
      */
     fun <PT : CustomPokemonProperty, T : CustomPokemonPropertyType<PT>> registerCustomPokemonProperty(prop: T): T {
         logger.sing("Registering custom pokemon property internally for later registration with Cobblemon: ${prop.keys.first()}")

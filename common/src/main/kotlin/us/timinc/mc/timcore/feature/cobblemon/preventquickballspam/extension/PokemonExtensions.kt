@@ -1,7 +1,7 @@
-package us.timinc.mc.timcore.feature.preventquickballspam.extension
+package us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.extension
 
 import com.cobblemon.mod.common.pokemon.Pokemon
-import us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam
+import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam
 
 fun Pokemon.isImmuneToQuickBall(): Boolean =
     PreventQuickBallSpam.PokemonProperties.immuneToQuickBall.pokemonMatcher(this, true)

@@ -3,8 +3,8 @@ package us.timinc.mc.timcore
 import us.timinc.mc.timcore.api.event.TimCoreEvents
 import us.timinc.mc.timcore.api.mod.AbstractMod
 import us.timinc.mc.timcore.api.mod.ModConfig
-import us.timinc.mc.timcore.feature.customdroplogic.CustomDropLogic
-import us.timinc.mc.timcore.feature.preventquickballspam.PreventQuickBallSpam
+import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.CustomDropLogic
+import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam
 
 object TimCore : AbstractMod<TimCore.Config>(MOD_ID, Config::class) {
     class Config : ModConfig()

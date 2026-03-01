@@ -1,4 +1,4 @@
-package us.timinc.mc.timcore.feature.preventquickballspam
+package us.timinc.mc.timcore.feature.cobblemon.preventquickballspam
 
 import com.cobblemon.mod.common.api.Priority
 import com.cobblemon.mod.common.api.events.CobblemonEvents
@@ -7,13 +7,13 @@ import us.timinc.mc.timcore.api.cobblemon.CobblemonModule
 import us.timinc.mc.timcore.api.cobblemon.property.PersistentDataProperty
 import us.timinc.mc.timcore.api.feature.AbstractFeature
 import us.timinc.mc.timcore.api.feature.FeatureConfig
-import us.timinc.mc.timcore.feature.preventquickballspam.handler.QuickBallSpamCatchRate
+import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.handler.QuickBallSpamCatchRate
 
 object PreventQuickBallSpam : AbstractFeature<TimCore, PreventQuickBallSpam.Config>(
     TimCore,
     "prevent_quick_ball_spam",
     Config::class,
-    listOf("cobblemon"),
+    setOf("cobblemon"),
 ) {
     class Config : FeatureConfig()
 
