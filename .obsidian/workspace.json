@@ -185,6 +185,8 @@
   },
   "active": "5533547675a4ea1e",
   "lastOpenFiles": [
+    "README.md",
+    "common/src/main/kotlin/us/timinc/mc/timcore/api/mod/README.md",
     "common/src/main/kotlin/us/timinc/mc/timcore/api/feature/README.md",
     "fabric/run/saves/New World/playerdata/6b45a986-a4aa-3b68-85a3-c5041d0b6192.dat_old",
     "fabric/run/saves/New World/advancements/6b45a986-a4aa-3b68-85a3-c5041d0b6192.json",
@@ -196,8 +198,6 @@
     "fabric/run/saves/New World/pokedex/6b",
     "fabric/run/saves/New World/cobblemonplayerdata/6b",
     "fabric/run/saves/New World/pokemon/pcstore/6b",
-    "common/src/main/kotlin/us/timinc/mc/timcore/api/mod/README.md",
-    "common/src/main/kotlin/us/timinc/mc/timcore/api/logging/README.md",
-    "README.md"
+    "common/src/main/kotlin/us/timinc/mc/timcore/api/logging/README.md"
   ]
 }
