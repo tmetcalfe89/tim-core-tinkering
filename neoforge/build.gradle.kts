@@ -43,6 +43,9 @@ dependencies {
     "developmentNeoForge"(project(":common", configuration = "namedElements")) {
         isTransitive = false
     }
+    "developmentNeoForge"("com.github.vishna:watchservice-ktx:master-SNAPSHOT") {
+        isTransitive = false
+    }
     shadowBundle(project(":common", configuration = "transformProductionNeoForge"))
 
     // Ensure common's external runtime deps are included in the platform shadow
@@ -50,8 +53,6 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junit_version")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junit_version")}")
-    implementation("com.github.vishna:watchservice-ktx:master-SNAPSHOT")
-    shadow("com.github.vishna:watchservice-ktx:master-SNAPSHOT")
 }
 
 tasks.getByName<Test>("test") {
