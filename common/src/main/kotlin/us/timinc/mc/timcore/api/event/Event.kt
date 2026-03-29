@@ -21,14 +21,14 @@ open class Event<T> {
      * Creates a new subscription with the given listener and priority, adds it, and returns it.
      */
     @Suppress("unused")
-    fun subscribe(listener: (T) -> Unit, priority: Priority = Priority.NORMAL) =
+    fun subscribeWithPriority(listener: (T) -> Unit, priority: Priority = Priority.NORMAL) =
         subscribe(Subscription(listener, priority))
 
     /**
      * Creates a new subscription with the given listener and normal priority, adds it, and returns it.
      */
     fun subscribe(listener: (T) -> Unit): Subscription<T> =
-        subscribe(listener)
+        subscribeWithPriority(listener, Priority.NORMAL)
 
     /**
      * Removes an existing subscription.
