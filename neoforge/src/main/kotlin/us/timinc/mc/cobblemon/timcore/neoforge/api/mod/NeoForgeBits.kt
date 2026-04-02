@@ -7,6 +7,7 @@ import net.neoforged.fml.ModList
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent
 import net.neoforged.neoforge.registries.RegisterEvent
 import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
+import us.timinc.mc.timcore.api.minecraft.world.BlockContainer
 import us.timinc.mc.timcore.api.minecraft.world.ItemContainer
 import us.timinc.mc.timcore.api.mod.PlatformBits
 
@@ -23,6 +24,28 @@ object NeoForgeBits : PlatformBits() {
             }
             MOD_BUS.addListener { e: BuildCreativeModeTabContentsEvent ->
                 items.values.filter { it.tab == e.tabKey }.forEach { e.accept(it.item) }
+            }
+        }
+    }
+
+    override fun registerBlocks(blocks: MutableMap<ResourceLocation, BlockContainer<*>>) {
+        if (blocks.isNotEmpty()) {
+            MOD_BUS.addListener { e: RegisterEvent ->
+                if (e.registry != BuiltInRegistries.BLOCK) return@addListener
+                blocks.forEach { (id: ResourceLocation, blockContainer: BlockContainer<*>) ->
+                    e.register(Registries.BLOCK, id) { blockContainer.block }
+                }
+            }
+            MOD_BUS.addListener { e: RegisterEvent ->
+                if (e.registry != BuiltInRegistries.ITEM) return@addListener
+                blocks.forEach { (id, blockContainer) ->
+                    blockContainer.item?.let { blockItem -> e.register(Registries.ITEM, id) { blockItem } }
+                }
+            }
+            MOD_BUS.addListener { e: BuildCreativeModeTabContentsEvent ->
+                blocks.values.filter { it.tab == e.tabKey }.forEach { blockContainer ->
+                    blockContainer.item?.let(e::accept)
+                }
             }
         }
     }

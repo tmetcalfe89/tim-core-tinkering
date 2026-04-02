@@ -2,7 +2,9 @@ package us.timinc.mc.timcore.api.minecraft
 
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
+import net.minecraft.world.level.block.Block
 import us.timinc.mc.timcore.TimCore
+import us.timinc.mc.timcore.api.minecraft.world.BlockContainer
 import us.timinc.mc.timcore.api.minecraft.world.ItemContainer
 import us.timinc.mc.timcore.api.mod.PlatformBits
 import us.timinc.mc.timcore.api.module.AbstractModule
@@ -14,12 +16,17 @@ import us.timinc.mc.timcore.api.module.AbstractModule
  */
 object MinecraftModule : AbstractModule<TimCore>(TimCore, "minecraft") {
     private val items: MutableMap<ResourceLocation, ItemContainer<*>> = mutableMapOf()
+    private val blocks: MutableMap<ResourceLocation, BlockContainer<*>> = mutableMapOf()
     private var initialized: Boolean = false
 
     override fun init(platformBits: PlatformBits) {
         if (items.isNotEmpty()) {
             logger.sing("Registering ${items.size} items.")
             platformBits.registerItems(items)
+        }
+        if (blocks.isNotEmpty()) {
+            logger.sing("Registering ${blocks.size} blocks.")
+            platformBits.registerBlocks(blocks)
         }
         initialized = true
     }
@@ -38,6 +45,15 @@ object MinecraftModule : AbstractModule<TimCore>(TimCore, "minecraft") {
 
         logger.sing("Adding item $id to be registered.")
         items[id] = container
+        return container
+    }
+
+    fun <T : Block> registerBlock(id: ResourceLocation, container: BlockContainer<T>) : BlockContainer<T> {
+        if (initialized) throw IllegalStateException("Minecraft module already initialized.")
+        if (blocks.containsKey(id)) throw IllegalStateException("Block $id already registered.")
+
+        logger.sing("Adding block $id to be registered.")
+        blocks[id] = container
         return container
     }
 }

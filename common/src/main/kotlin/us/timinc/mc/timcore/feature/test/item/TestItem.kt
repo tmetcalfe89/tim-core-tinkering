@@ -11,7 +11,7 @@ import us.timinc.mc.timcore.api.minecraft.world.ItemContainer
 object TestItem : AbstractFeature<TimCore, TestItem.Config>(
     TimCore,
     "test/item",
-    Config::class
+    Config::class,
 ) {
     class Config : FeatureConfig(
         enabled = false,
@@ -20,15 +20,15 @@ object TestItem : AbstractFeature<TimCore, TestItem.Config>(
 
     object ModItems {
         @Suppress("unused")
-        val BASIC_TEST =
+        val BASIC_TEST_ITEM =
             MinecraftModule.registerItem(
-                mod.modResource("basic_test"),
+                mod.modResource("basic_test_item"),
                 ItemContainer.Basic()
             )
         @Suppress("unused")
-        val CREATIVE_TAB_TEST =
+        val CREATIVE_TAB_TEST_ITEM =
             MinecraftModule.registerItem(
-                mod.modResource("creative_tab_test"),
+                mod.modResource("creative_tab_test_item"),
                 ItemContainer.Basic(tab = VanillaCreativeTabs.FOOD_AND_DRINKS)
             )
     }

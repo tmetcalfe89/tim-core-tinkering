@@ -6,6 +6,7 @@ import us.timinc.mc.timcore.api.mod.ModConfig
 import us.timinc.mc.timcore.api.mod.PlatformBits
 import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.CustomDropLogic
 import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam
+import us.timinc.mc.timcore.feature.test.block.TestBlock
 import us.timinc.mc.timcore.feature.test.item.TestItem
 
 object TimCore : AbstractMod<TimCore.Config>(MOD_ID, Config::class) {
@@ -16,6 +17,7 @@ object TimCore : AbstractMod<TimCore.Config>(MOD_ID, Config::class) {
         PreventQuickBallSpam
         CustomDropLogic
         TestItem
+        TestBlock
 
         // Don't worry about this, it's for Tim Core specifically.
         timCoreSpecificInit(platformBits)

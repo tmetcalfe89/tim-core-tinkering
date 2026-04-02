@@ -1,6 +1,7 @@
 package us.timinc.mc.timcore.api.mod
 
 import net.minecraft.resources.ResourceLocation
+import us.timinc.mc.timcore.api.minecraft.world.BlockContainer
 import us.timinc.mc.timcore.api.minecraft.world.ItemContainer
 
 /**
@@ -23,4 +24,9 @@ abstract class PlatformBits {
      * Register a collection of items.
      */
     abstract fun registerItems(items: MutableMap<ResourceLocation, ItemContainer<*>>)
+
+    /**
+     * Register a collection of blocks.
+     */
+    abstract fun registerBlocks(blocks: MutableMap<ResourceLocation, BlockContainer<*>>)
 }
