@@ -6,6 +6,7 @@ import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
 import com.cobblemon.mod.common.api.properties.CustomPokemonPropertyType
 import us.timinc.mc.timcore.TimCore
 import us.timinc.mc.timcore.api.event.OneTimeEvent
+import us.timinc.mc.timcore.api.mod.PlatformBits
 import us.timinc.mc.timcore.api.module.AbstractModule
 
 /**
@@ -26,7 +27,6 @@ object CobblemonModule : AbstractModule<TimCore>(TimCore, "cobblemon") {
      * commands such as `pokeedit`, `pokespawn`, and `pokegive` (anything that uses PokemonProperties).
      *
      * @author Timothy Metcalfe
-     * @sample us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam.PokemonProperties.immuneToQuickBall
      */
     fun <PT : CustomPokemonProperty, T : CustomPokemonPropertyType<PT>> registerCustomPokemonProperty(prop: T): T {
         logger.sing("Registering custom pokemon property internally for later registration with Cobblemon: ${prop.keys.first()}")
@@ -34,7 +34,7 @@ object CobblemonModule : AbstractModule<TimCore>(TimCore, "cobblemon") {
         return prop
     }
 
-    override fun init() {
+    override fun init(platformBits: PlatformBits) {
         logger.sing("Listening for Cobblemon to load to do setup.")
         Events.COBBLEMON_INITIALIZED.subscribe {
             logger.sing("Registering ${customPokemonProperties.size} custom pokemon properties: ${customPokemonProperties.map { it.keys.first() }}")

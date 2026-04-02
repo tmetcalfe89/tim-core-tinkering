@@ -64,13 +64,13 @@ abstract class AbstractMod<C : ModConfig>(val modId: String, configClass: KClass
     fun init(platformBits: PlatformBits) {
         logger.sing("Loading for ${platformBits.platformName}.")
         this.platformBits = platformBits
-        initialize()
+        initialize(platformBits)
     }
 
     /**
      * Override this to do your own setup.
      */
-    abstract fun initialize()
+    abstract fun initialize(platformBits: PlatformBits)
 
     override fun toString(): String = modId
 

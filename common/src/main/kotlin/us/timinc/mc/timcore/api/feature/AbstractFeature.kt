@@ -70,7 +70,7 @@ abstract class AbstractFeature<M : AbstractMod<*>, C : FeatureConfig>(
             logger.warn("Not loading feature: Config has feature disabled.")
             return
         }
-        if (!requiredMods.any(mod.platformBits::isModPresent)) {
+        if (!requiredMods.all(mod.platformBits::isModPresent)) {
             logger.warn("Not loading feature")
             return
         }

@@ -3,6 +3,7 @@ package us.timinc.mc.timcore.api.module
 import us.timinc.mc.timcore.api.event.TimCoreEvents
 import us.timinc.mc.timcore.api.logging.Logger
 import us.timinc.mc.timcore.api.mod.AbstractMod
+import us.timinc.mc.timcore.api.mod.PlatformBits
 
 /**
  * The basis for a compatibility layer with another mod, mostly for registration. The intent is that modules remain
@@ -20,13 +21,13 @@ abstract class AbstractModule<M : AbstractMod<*>>(val mod: M, name: String) {
     /**
      * Override this to do whatever you need to do when Tim Core wakes up the module.
      */
-    internal abstract fun init()
+    internal abstract fun init(platformBits: PlatformBits)
 
     init {
         logger.sing("Subscribing to MODULE_LOAD.")
-        TimCoreEvents.MODULE_LOAD.subscribe {
+        TimCoreEvents.MODULE_LOAD.subscribe { platformBits ->
             logger.sing("Loading.")
-            init()
+            init(platformBits)
         }
     }
 }
