@@ -5,3 +5,4 @@
 >~Tim
 ## Tutorials
 [Building a Mod](common/src/main/kotlin/us/timinc/mc/timcore/api/mod/README.md)
+[What features are added to Cobblemon?](common/src/main/kotlin/us/timinc/mc/timcore/feature/cobblemon/README.md)
