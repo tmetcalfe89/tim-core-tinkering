@@ -28,4 +28,4 @@ Base mod has a drop type that drops an item with optional data on it. Someone re
     }
 }
 ```
-Basically, replace the `item` and `components` with `itemTag`.
+Basically, replace the `item` and `components` with `itemTag`. The rest of the properties from base mod's item drop are the same.
