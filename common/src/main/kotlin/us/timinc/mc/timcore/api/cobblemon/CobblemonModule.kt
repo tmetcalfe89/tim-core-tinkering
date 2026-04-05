@@ -47,6 +47,7 @@ object CobblemonModule : AbstractModule<TimCore>(TimCore, "cobblemon") {
         // I'm sure it won't backfire by having a sidemod register a species feature before Cobblemon gets the chance to
         // register its.
         // TODO: Find a solution to avoid the above issue.
+        // TODO: Move this to a mixin in Cobblemon::initialize
         when (SpeciesFeatures.types.isEmpty()) {
             true -> {
                 logger.sing("Cobblemon not yet initialized. Listening for Cobblemon to load.")
