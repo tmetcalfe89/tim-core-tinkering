@@ -30,6 +30,9 @@ object FabricBits : PlatformBits() {
                     ItemGroupEvents.modifyEntriesEvent(tab).register { evt -> evt.accept(blockItem) }
                 }
             }
+            if (blockContainer is BlockContainer.WithEntity<*, *>) {
+                Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, id, blockContainer.blockEntityType)
+            }
         }
     }
 }

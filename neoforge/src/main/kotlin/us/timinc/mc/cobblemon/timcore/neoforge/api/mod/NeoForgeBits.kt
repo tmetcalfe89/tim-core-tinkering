@@ -42,6 +42,13 @@ object NeoForgeBits : PlatformBits() {
                     blockContainer.item?.let { blockItem -> e.register(Registries.ITEM, id) { blockItem } }
                 }
             }
+            MOD_BUS.addListener { e: RegisterEvent ->
+                if (e.registry != BuiltInRegistries.BLOCK_ENTITY_TYPE) return@addListener
+                blocks.forEach { (id, blockContainer) ->
+                    if (blockContainer !is BlockContainer.WithEntity<*, *>) return@forEach
+                    e.register(Registries.BLOCK_ENTITY_TYPE, id) { blockContainer.blockEntityType }
+                }
+            }
             MOD_BUS.addListener { e: BuildCreativeModeTabContentsEvent ->
                 blocks.values.filter { it.tab == e.tabKey }.forEach { blockContainer ->
                     blockContainer.item?.let(e::accept)

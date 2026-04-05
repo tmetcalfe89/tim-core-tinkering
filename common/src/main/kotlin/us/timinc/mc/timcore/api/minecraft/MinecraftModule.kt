@@ -48,7 +48,7 @@ object MinecraftModule : AbstractModule<TimCore>(TimCore, "minecraft") {
         return container
     }
 
-    fun <T : Block> registerBlock(id: ResourceLocation, container: BlockContainer<T>) : BlockContainer<T> {
+    fun <T : Block, C : BlockContainer<T>> registerBlock(id: ResourceLocation, container: C) : C {
         if (initialized) throw IllegalStateException("Minecraft module already initialized.")
         if (blocks.containsKey(id)) throw IllegalStateException("Block $id already registered.")
 
