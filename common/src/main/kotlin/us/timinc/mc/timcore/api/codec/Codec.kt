@@ -1,12 +1,14 @@
 package us.timinc.mc.timcore.api.codec
 
 import com.mojang.serialization.Codec
+import net.minecraft.resources.ResourceLocation
 
 /**
  * A collection of useful codecs.
  *
  * @author Timothy Metcalfe
  */
+@Suppress("unused")
 object Codec {
     /**
      * A codec to produce a Kotlin integer range. Use `min` at the start for unbounded minimum, and `max` at the end for
@@ -59,4 +61,15 @@ object Codec {
         },
         { it.toString() }
     )
+
+    fun makeResourceLocationWithDefaultNamespaceCodec(defaultNamespace: String): Codec<ResourceLocation> =
+        Codec.STRING.xmap(
+            {
+                if (it.contains(":")) ResourceLocation.fromNamespaceAndPath(
+                    it.substringBefore(":"),
+                    it.substringAfter(":")
+                ) else ResourceLocation.fromNamespaceAndPath(defaultNamespace, it)
+            },
+            { it.toString() }
+        )
 }
