@@ -47,6 +47,10 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junit_version")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junit_version")}")
+
+    runtimeOnly("org.graalvm.sdk:graal-sdk:${property("graal_version")}")
+    runtimeOnly("org.graalvm.truffle:truffle-api:${property("graal_version")}")
+    runtimeOnly("org.graalvm.js:js:${property("graal_version")}")
 }
 
 tasks.getByName<Test>("test") {
