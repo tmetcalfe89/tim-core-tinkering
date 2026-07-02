@@ -9,7 +9,7 @@ package us.timinc.mc.timcore.api.event
  * @author Timothy Metcalfe
  */
 @Suppress("unused")
-class FireAndForgetEvent<T> : Event<T>() {
+class FireAndForgetEvent<T : Any> : Event<T>() {
     private var completedValue: T? = null
 
     /**

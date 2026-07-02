@@ -7,7 +7,7 @@ package us.timinc.mc.timcore.api.event
  *
  * @author Timothy Metcalfe
  */
-class OneTimeEvent<T> : Event<T>() {
+class OneTimeEvent<T : Any> : Event<T>() {
     private var completedValue: T? = null
 
     /**
