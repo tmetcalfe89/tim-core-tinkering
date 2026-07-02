@@ -21,6 +21,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junit_version")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junit_version")}")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.1.0")
     implementation("com.github.vishna:watchservice-ktx:master-SNAPSHOT")
 }
 
