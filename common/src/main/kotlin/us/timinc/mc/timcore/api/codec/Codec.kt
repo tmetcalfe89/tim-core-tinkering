@@ -47,11 +47,11 @@ object Codec {
             try {
                 val (start, end) = str.split("..")
                 val actualStart = when (start.lowercase()) {
-                    "min" -> Float.MIN_VALUE
+                    "min" -> Float.NEGATIVE_INFINITY
                     else -> start.toFloat()
                 }
                 val actualEnd = when (end.lowercase()) {
-                    "max" -> Float.MAX_VALUE
+                    "max" -> Float.POSITIVE_INFINITY
                     else -> end.toFloat()
                 }
                 actualStart..actualEnd
