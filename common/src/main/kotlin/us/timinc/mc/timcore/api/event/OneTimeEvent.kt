@@ -29,7 +29,7 @@ class OneTimeEvent<T : Any> : Event<T>() {
      */
     override fun fire(data: T) {
         completedValue?.let {
-            throw Exception("This one-time event already completed.")
+            throw IllegalStateException("This one-time event already completed.")
         }
         completedValue = data
         super.fire(data)

@@ -1,7 +1,7 @@
 package us.timinc.mc.timcore.api.event
 
 /**
- * A read-only event surface for code that should be able to listen, but not fire the event.
+ * A subscribe-only event surface for code that should be able to listen, but not fire the event.
  */
 interface Subscribable<T> {
     fun subscribe(subscription: Subscription<T>): Subscription<T>

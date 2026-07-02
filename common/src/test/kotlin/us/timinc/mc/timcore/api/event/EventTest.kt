@@ -1,6 +1,7 @@
 package us.timinc.mc.timcore.api.event
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
 
 class EventTest {
@@ -21,6 +22,31 @@ class EventTest {
             listOf(Priority.HIGHEST, Priority.HIGH, Priority.NORMAL, Priority.LOW, Priority.LOWEST),
             calls
         )
+    }
+
+    @Test
+    fun `subscribe returns the created subscription with normal priority`() {
+        val event = Event<Unit>()
+        val listener: (Unit) -> Unit = {}
+
+        val subscription = event.subscribe(listener)
+
+        assertSame(listener, subscription.listener)
+        assertEquals(Priority.NORMAL, subscription.priority)
+    }
+
+    @Test
+    fun `unsubscribe prevents future dispatch`() {
+        val event = Event<Unit>()
+        val calls = mutableListOf<String>()
+
+        val subscription = event.subscribe {
+            calls.add("called")
+        }
+        event.unsubscribe(subscription)
+        event.fire(Unit)
+
+        assertEquals(emptyList<String>(), calls)
     }
 
     @Test
