@@ -7,5 +7,5 @@ package us.timinc.mc.timcore.api.event
  * pattern.
  */
 enum class Priority {
-    LOWEST, LOW, NORMAL, HIGH, HIGHEST
+    HIGHEST, HIGH, NORMAL, LOW, LOWEST
 }
