@@ -45,7 +45,9 @@ open class Event<T> : Subscribable<T> {
      */
     open fun fire(data: T) {
         for (prioritySubscriptions in subscribers) {
-            for (subscription in prioritySubscriptions) {
+            val snapshot = prioritySubscriptions.toList()
+            for (subscription in snapshot) {
+                if (subscription !in prioritySubscriptions) continue
                 subscription.listener(data)
             }
         }
