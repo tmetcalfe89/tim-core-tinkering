@@ -40,6 +40,8 @@ open class TagItemDropEntry : DropEntry {
     open var dropMethod: ItemDropMethod? = null
     open var itemTag: ResourceLocation = ResourceLocation.parse("minecraft:fishes")
 
+    fun getCount() = quantityRange?.random() ?: quantity
+
     override fun drop(
         entity: LivingEntity?,
         world: ServerLevel,
@@ -56,13 +58,13 @@ open class TagItemDropEntry : DropEntry {
                 logger.alert("Unable to load drop item from tag: $itemTag")
                 return
             }
-            val stack = ItemStack(holder)
+            val stack = ItemStack(holder, getCount())
 
             val inLava = world.getBlockState(pos.toBlockPos()).block == Blocks.LAVA
             val dropMethod = (dropMethod ?: Cobblemon.config.defaultDropItemMethod).let {
                 if (inLava) {
-                    ItemDropMethod.TO_INVENTORY
                     logger.sing("Item would spawn in lava, reverting to placing it in user's inventory.")
+                    ItemDropMethod.TO_INVENTORY
                 } else it
             }
 
