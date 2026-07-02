@@ -6,13 +6,13 @@ package us.timinc.mc.timcore.api.event
  *
  * @author Timothy Metcalfe
  */
-open class Event<T> {
-    val subscribers = Array(Priority.entries.size) { LinkedHashSet<Subscription<T>>() }
+open class Event<T> : Subscribable<T> {
+    protected val subscribers = Array(Priority.entries.size) { LinkedHashSet<Subscription<T>>() }
 
     /**
      * Adds a new subscription and returns it.
      */
-    open fun subscribe(subscription: Subscription<T>): Subscription<T> {
+    override fun subscribe(subscription: Subscription<T>): Subscription<T> {
         subscribers[subscription.priority.ordinal].add(subscription)
         return subscription
     }
@@ -21,20 +21,20 @@ open class Event<T> {
      * Creates a new subscription with the given listener and priority, adds it, and returns it.
      */
     @Suppress("unused")
-    fun subscribeWithPriority(listener: (T) -> Unit, priority: Priority = Priority.NORMAL) =
+    override fun subscribeWithPriority(listener: (T) -> Unit, priority: Priority) =
         subscribe(Subscription(listener, priority))
 
     /**
      * Creates a new subscription with the given listener and normal priority, adds it, and returns it.
      */
-    fun subscribe(listener: (T) -> Unit): Subscription<T> =
+    override fun subscribe(listener: (T) -> Unit): Subscription<T> =
         subscribeWithPriority(listener, Priority.NORMAL)
 
     /**
      * Removes an existing subscription.
      */
     @Suppress("unused")
-    open fun unsubscribe(subscription: Subscription<T>) {
+    override fun unsubscribe(subscription: Subscription<T>) {
         subscribers[subscription.priority.ordinal].remove(subscription)
     }
 

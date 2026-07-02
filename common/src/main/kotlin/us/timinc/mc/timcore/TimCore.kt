@@ -28,8 +28,8 @@ object TimCore : AbstractMod<TimCore.Config>(MOD_ID, Config::class) {
     // DO NOT copy this to your mod. It's the thing that tells everybody else to wake up.
     fun timCoreSpecificInit(platformBits: PlatformBits) {
         logger.sing("Waking up the features.")
-        TimCoreEvents.FEATURE_LOAD.fire(Unit)
+        TimCoreEvents.fireFeatureLoad()
         logger.sing("Waking up the modules.")
-        TimCoreEvents.MODULE_LOAD.fire(platformBits)
+        TimCoreEvents.fireModuleLoad(platformBits)
     }
 }
