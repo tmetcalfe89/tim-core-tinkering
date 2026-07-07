@@ -25,7 +25,7 @@ class OneTimeEvent<T : Any> : Event<T>() {
     /**
      * Fires the event, remembering the event value, and clearing all subscriptions afterward.
      *
-     * @throws [Exception] If the event was already fired.
+     * @throws [IllegalStateException] If the event was already fired.
      */
     override fun fire(data: T) {
         completedValue?.let {
