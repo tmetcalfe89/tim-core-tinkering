@@ -1,11 +1,11 @@
 package us.timinc.mc.timcore.api.event
 
+import net.minecraft.resources.ResourceLocation
+
 /**
- * A simple encapsulation of an event subscription. At the moment, contains both the listener and the priority. See
- * [Priority] for more info about my intent there. Even if priority is removed or altered in the future, this class
- * will remain as an encapsulation class.
+ * A simple encapsulation of an event subscription.
  */
 class Subscription<T>(
+    val id: ResourceLocation,
     val listener: (T) -> Unit,
-    val priority: Priority = Priority.NORMAL,
 )

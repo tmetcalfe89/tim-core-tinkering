@@ -6,6 +6,7 @@ import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
 import com.cobblemon.mod.common.api.properties.CustomPokemonPropertyType
 import us.timinc.mc.timcore.TimCore
 import us.timinc.mc.timcore.api.event.OneTimeEvent
+import us.timinc.mc.timcore.api.event.Subscription
 import us.timinc.mc.timcore.api.mod.PlatformBits
 import us.timinc.mc.timcore.api.module.AbstractModule
 
@@ -18,6 +19,12 @@ object CobblemonModule : AbstractModule<TimCore>(TimCore, "cobblemon") {
     object Events {
         @JvmField
         val COBBLEMON_INITIALIZED = OneTimeEvent<Unit>()
+    }
+
+    object DataKeys {
+        object Subscriptions {
+            val REGISTER_CUSTOM_POKEMON_PROPERTIES = mod.modResource("cobblemon/register_custom_pokemon_properties")
+        }
     }
 
     private val customPokemonProperties: MutableList<CustomPokemonPropertyType<*>> = mutableListOf()
@@ -36,12 +43,12 @@ object CobblemonModule : AbstractModule<TimCore>(TimCore, "cobblemon") {
 
     override fun init(platformBits: PlatformBits) {
         logger.sing("Listening for Cobblemon to load to do setup.")
-        Events.COBBLEMON_INITIALIZED.subscribe {
+        Events.COBBLEMON_INITIALIZED.subscribe(Subscription(DataKeys.Subscriptions.REGISTER_CUSTOM_POKEMON_PROPERTIES) {
             logger.sing("Registering ${customPokemonProperties.size} custom pokemon properties: ${customPokemonProperties.map { it.keys.first() }}")
             for (prop in customPokemonProperties) {
                 CustomPokemonProperty.register(prop)
             }
-        }
+        })
 
         // Jank solution to shoehorn the SimpleObservable that is COBBLEMON_INITIALIZED into a FireAndForgetObservable.
         // I'm sure it won't backfire by having a sidemod register a species feature before Cobblemon gets the chance to

@@ -2,6 +2,7 @@ package us.timinc.mc.timcore.api.feature
 
 import us.timinc.mc.timcore.api.config.Config
 import us.timinc.mc.timcore.api.context.OperationContext
+import us.timinc.mc.timcore.api.event.Subscription
 import us.timinc.mc.timcore.api.event.TimCoreEvents
 import us.timinc.mc.timcore.api.logging.Logger
 import us.timinc.mc.timcore.api.logging.LoggerScope
@@ -41,6 +42,8 @@ abstract class AbstractFeature<M : AbstractMod<*>, C : FeatureConfig>(
         override val logger: Logger = feature.logger.makeCaseLogger()
         override val config: C = feature.config.values
     }
+
+    val FEATURE_LOAD_SUBSCRIPTION_ID = mod.modResource("feature/$name/load")
 
     /**
      * Features have their own config that has the properties seen in [FeatureConfig] at the least. Extend this class in
@@ -90,6 +93,6 @@ abstract class AbstractFeature<M : AbstractMod<*>, C : FeatureConfig>(
         }
 
     init {
-        TimCoreEvents.FEATURE_LOAD.subscribe { init() }
+        TimCoreEvents.FEATURE_LOAD.subscribe(Subscription(FEATURE_LOAD_SUBSCRIPTION_ID) { init() })
     }
 }

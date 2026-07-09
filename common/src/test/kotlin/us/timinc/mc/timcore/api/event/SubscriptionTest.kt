@@ -1,27 +1,20 @@
 package us.timinc.mc.timcore.api.event
 
-import org.junit.jupiter.api.Assertions.assertEquals
+import net.minecraft.resources.ResourceLocation
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
 
 class SubscriptionTest {
-    @Test
-    fun `defaults to normal priority`() {
-        val listener: (Unit) -> Unit = {}
-
-        val subscription = Subscription(listener)
-
-        assertSame(listener, subscription.listener)
-        assertEquals(Priority.NORMAL, subscription.priority)
-    }
+    private fun id(path: String): ResourceLocation = ResourceLocation.fromNamespaceAndPath("test", path)
 
     @Test
-    fun `keeps explicit priority`() {
+    fun `keeps its id and listener`() {
         val listener: (Unit) -> Unit = {}
+        val subscriptionId = id("subscription")
 
-        val subscription = Subscription(listener, Priority.HIGH)
+        val subscription = Subscription(subscriptionId, listener)
 
+        assertSame(subscriptionId, subscription.id)
         assertSame(listener, subscription.listener)
-        assertEquals(Priority.HIGH, subscription.priority)
     }
 }

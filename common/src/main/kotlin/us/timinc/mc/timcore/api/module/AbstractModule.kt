@@ -1,5 +1,6 @@
 package us.timinc.mc.timcore.api.module
 
+import us.timinc.mc.timcore.api.event.Subscription
 import us.timinc.mc.timcore.api.event.TimCoreEvents
 import us.timinc.mc.timcore.api.logging.Logger
 import us.timinc.mc.timcore.api.mod.AbstractMod
@@ -13,6 +14,8 @@ import us.timinc.mc.timcore.api.mod.PlatformBits
  * @author Timothy Metcalfe
  */
 abstract class AbstractModule<M : AbstractMod<*>>(val mod: M, name: String) {
+    val MODULE_LOAD_SUBSCRIPTION_ID = mod.modResource("module/$name/load")
+
     /**
      * Each module gets access to its own logger, but they're meant for internal use only.
      */
@@ -25,9 +28,9 @@ abstract class AbstractModule<M : AbstractMod<*>>(val mod: M, name: String) {
 
     init {
         logger.sing("Subscribing to MODULE_LOAD.")
-        TimCoreEvents.MODULE_LOAD.subscribe { platformBits ->
+        TimCoreEvents.MODULE_LOAD.subscribe(Subscription(MODULE_LOAD_SUBSCRIPTION_ID) { platformBits ->
             logger.sing("Loading.")
             init(platformBits)
-        }
+        })
     }
 }

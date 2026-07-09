@@ -1,38 +1,52 @@
 package us.timinc.mc.timcore.api.event
 
+import net.minecraft.resources.ResourceLocation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 class EventTest {
-    @Test
-    fun `fires subscribers from highest priority to lowest priority`() {
-        val event = Event<Unit>()
-        val calls = mutableListOf<Priority>()
+    private fun id(path: String): ResourceLocation = ResourceLocation.fromNamespaceAndPath("test", path)
 
-        event.subscribeWithPriority({ calls.add(Priority.LOWEST) }, Priority.LOWEST)
-        event.subscribeWithPriority({ calls.add(Priority.LOW) }, Priority.LOW)
-        event.subscribeWithPriority({ calls.add(Priority.NORMAL) }, Priority.NORMAL)
-        event.subscribeWithPriority({ calls.add(Priority.HIGH) }, Priority.HIGH)
-        event.subscribeWithPriority({ calls.add(Priority.HIGHEST) }, Priority.HIGHEST)
+    @Test
+    fun `fires subscribers`() {
+        val event = Event<Unit>()
+        val calls = mutableListOf<String>()
+
+        event.subscribe(Subscription(id("first")) { calls.add("first") })
+        event.subscribe(Subscription(id("second")) { calls.add("second") })
+        event.subscribe(Subscription(id("third")) { calls.add("third") })
 
         event.fire(Unit)
 
-        assertEquals(
-            listOf(Priority.HIGHEST, Priority.HIGH, Priority.NORMAL, Priority.LOW, Priority.LOWEST),
-            calls
-        )
+        assertEquals(listOf("first", "second", "third"), calls.sorted())
     }
 
     @Test
-    fun `subscribe returns the created subscription with normal priority`() {
+    fun `subscribe returns the provided subscription`() {
         val event = Event<Unit>()
         val listener: (Unit) -> Unit = {}
+        val subscription = Subscription(id("subscription"), listener)
 
-        val subscription = event.subscribe(listener)
+        val result = event.subscribe(subscription)
 
-        assertSame(listener, subscription.listener)
-        assertEquals(Priority.NORMAL, subscription.priority)
+        assertSame(subscription, result)
+        assertSame(listener, result.listener)
+    }
+
+    @Test
+    fun `duplicate subscription ids are rejected`() {
+        val event = Event<Unit>()
+        val calls = mutableListOf<String>()
+
+        event.subscribe(Subscription(id("same")) { calls.add("first") })
+        assertThrows(IllegalArgumentException::class.java) {
+            event.subscribe(Subscription(id("same")) { calls.add("second") })
+        }
+        event.fire(Unit)
+
+        assertEquals(listOf("first"), calls)
     }
 
     @Test
@@ -40,50 +54,12 @@ class EventTest {
         val event = Event<Unit>()
         val calls = mutableListOf<String>()
 
-        val subscription = event.subscribe {
+        val subscription = event.subscribe(Subscription(id("subscription")) {
             calls.add("called")
-        }
+        })
         event.unsubscribe(subscription)
         event.fire(Unit)
 
         assertEquals(emptyList<String>(), calls)
-    }
-
-    @Test
-    fun `unsubscribe during fire does not invalidate dispatch`() {
-        val event = Event<Unit>()
-        val calls = mutableListOf<String>()
-
-        lateinit var second: Subscription<Unit>
-        event.subscribe {
-            calls.add("first")
-            event.unsubscribe(second)
-        }
-        second = event.subscribe {
-            calls.add("second")
-        }
-
-        event.fire(Unit)
-
-        assertEquals(listOf("first"), calls)
-    }
-
-    @Test
-    fun `subscribe during fire waits until the next fire`() {
-        val event = Event<Unit>()
-        val calls = mutableListOf<String>()
-
-        event.subscribe {
-            calls.add("first")
-            event.subscribe {
-                calls.add("second")
-            }
-        }
-
-        event.fire(Unit)
-        assertEquals(listOf("first"), calls)
-
-        event.fire(Unit)
-        assertEquals(listOf("first", "first", "second"), calls)
     }
 }

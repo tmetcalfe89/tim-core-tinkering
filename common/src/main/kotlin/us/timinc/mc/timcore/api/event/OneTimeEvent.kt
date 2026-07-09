@@ -33,8 +33,6 @@ class OneTimeEvent<T : Any> : Event<T>() {
         }
         completedValue = data
         super.fire(data)
-        for (prioritySubs in subscribers) {
-            prioritySubs.clear()
-        }
+        subscribers.clear()
     }
 }

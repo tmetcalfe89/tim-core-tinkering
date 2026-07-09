@@ -1,16 +1,19 @@
 package us.timinc.mc.timcore.api.event
 
+import net.minecraft.resources.ResourceLocation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 class OneTimeEventTest {
+    private fun id(path: String): ResourceLocation = ResourceLocation.fromNamespaceAndPath("test", path)
+
     @Test
     fun `fires existing subscribers once`() {
         val event = OneTimeEvent<String>()
         val calls = mutableListOf<String>()
 
-        event.subscribe { calls.add(it) }
+        event.subscribe(Subscription(id("subscription")) { calls.add(it) })
         event.fire("ready")
 
         assertEquals(listOf("ready"), calls)
@@ -22,7 +25,7 @@ class OneTimeEventTest {
         val calls = mutableListOf<String>()
 
         event.fire("ready")
-        event.subscribe { calls.add(it) }
+        event.subscribe(Subscription(id("subscription")) { calls.add(it) })
 
         assertEquals(listOf("ready"), calls)
     }
@@ -32,9 +35,9 @@ class OneTimeEventTest {
         val event = OneTimeEvent<String>()
         val calls = mutableListOf<String>()
 
-        event.subscribe { calls.add("early:$it") }
+        event.subscribe(Subscription(id("early")) { calls.add("early:$it") })
         event.fire("ready")
-        event.subscribe { calls.add("late:$it") }
+        event.subscribe(Subscription(id("late")) { calls.add("late:$it") })
 
         assertEquals(listOf("early:ready", "late:ready"), calls)
     }
