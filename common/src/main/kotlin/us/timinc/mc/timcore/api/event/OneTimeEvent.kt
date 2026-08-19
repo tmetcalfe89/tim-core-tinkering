@@ -7,13 +7,13 @@ package us.timinc.mc.timcore.api.event
  *
  * @author Timothy Metcalfe
  */
-class OneTimeEvent<T : Any> : Event<T>() {
-    private var completedValue: T? = null
+class OneTimeEvent<In : Any> : Event<In, Unit>() {
+    private var completedValue: In? = null
 
     /**
      * Register a new subscription. If this event has already fired, call the subscription and do not register it.
      */
-    override fun subscribe(subscription: Subscription<T>): Subscription<T> {
+    override fun subscribe(subscription: Subscription<In, Unit>): Subscription<In, Unit> {
         completedValue?.let {
             subscription.listener(it)
 
@@ -27,7 +27,7 @@ class OneTimeEvent<T : Any> : Event<T>() {
      *
      * @throws [IllegalStateException] If the event was already fired.
      */
-    override fun fire(data: T) {
+    override fun fire(data: In) {
         completedValue?.let {
             throw IllegalStateException("This one-time event already completed.")
         }

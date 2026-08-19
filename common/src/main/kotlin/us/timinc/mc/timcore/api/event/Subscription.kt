@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation
 /**
  * A simple encapsulation of an event subscription.
  */
-class Subscription<T>(
+class Subscription<In, Out>(
     val id: ResourceLocation,
-    val listener: (T) -> Unit,
+    val listener: (In) -> Out,
 )

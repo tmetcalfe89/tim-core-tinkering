@@ -9,13 +9,13 @@ import net.minecraft.resources.ResourceLocation
  *
  * @author Timothy Metcalfe
  */
-open class Event<T> : Subscribable<T> {
-    protected val subscribers: MutableMap<ResourceLocation, Subscription<T>> = hashMapOf()
+open class Event<In, Out> : Subscribable<In, Out> {
+    protected val subscribers: MutableMap<ResourceLocation, Subscription<In, Out>> = hashMapOf()
 
     /**
      * Adds a new subscription and returns it.
      */
-    override fun subscribe(subscription: Subscription<T>): Subscription<T> {
+    override fun subscribe(subscription: Subscription<In, Out>): Subscription<In, Out> {
         if (subscribers.containsKey(subscription.id)) throw IllegalArgumentException("Duplicate subscriber ID ${subscription.id}")
         subscribers[subscription.id] = subscription
         return subscription
@@ -25,14 +25,14 @@ open class Event<T> : Subscribable<T> {
      * Removes an existing subscription.
      */
     @Suppress("unused")
-    override fun unsubscribe(subscription: Subscription<T>) {
+    override fun unsubscribe(subscription: Subscription<In, Out>) {
         subscribers.remove(subscription.id)
     }
 
     /**
      * Fires an event, calling every subscribed listener with the given data.
      */
-    open fun fire(data: T) {
+    open fun fire(data: In) {
         subscribers.values.forEach { it.listener(data) }
     }
 }

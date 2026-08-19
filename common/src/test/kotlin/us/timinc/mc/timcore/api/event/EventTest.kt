@@ -11,7 +11,7 @@ class EventTest {
 
     @Test
     fun `fires subscribers`() {
-        val event = Event<Unit>()
+        val event = Event<Unit, Unit>()
         val calls = mutableListOf<String>()
 
         event.subscribe(Subscription(id("first")) { calls.add("first") })
@@ -25,7 +25,7 @@ class EventTest {
 
     @Test
     fun `subscribe returns the provided subscription`() {
-        val event = Event<Unit>()
+        val event = Event<Unit, Unit>()
         val listener: (Unit) -> Unit = {}
         val subscription = Subscription(id("subscription"), listener)
 
@@ -37,7 +37,7 @@ class EventTest {
 
     @Test
     fun `duplicate subscription ids are rejected`() {
-        val event = Event<Unit>()
+        val event = Event<Unit, Unit>()
         val calls = mutableListOf<String>()
 
         event.subscribe(Subscription(id("same")) { calls.add("first") })
@@ -51,7 +51,7 @@ class EventTest {
 
     @Test
     fun `unsubscribe prevents future dispatch`() {
-        val event = Event<Unit>()
+        val event = Event<Unit, Unit>()
         val calls = mutableListOf<String>()
 
         val subscription = event.subscribe(Subscription(id("subscription")) {

@@ -9,13 +9,13 @@ package us.timinc.mc.timcore.api.event
  * @author Timothy Metcalfe
  */
 @Suppress("unused")
-class FireAndForgetEvent<T : Any> : Event<T>() {
+class FireAndForgetEvent<T : Any> : Event<T, Unit>() {
     private var completedValue: T? = null
 
     /**
      * Register a new subscription. If this event has already fired, call the subscription as well.
      */
-    override fun subscribe(subscription: Subscription<T>): Subscription<T> {
+    override fun subscribe(subscription: Subscription<T, Unit>): Subscription<T, Unit> {
         completedValue?.let(subscription.listener)
         return super.subscribe(subscription)
     }
