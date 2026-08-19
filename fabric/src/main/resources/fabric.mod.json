@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "${modId}",
-  "version": "${modCobblemonVersion}-fabric-${modMyVersion}",
+  "version": "${modMyVersion}-fabric",
   "name": "${modName}",
   "description": "${modDescription}",
   "authors": [
@@ -13,7 +13,7 @@
     "main": [
       {
         "adapter": "kotlin",
-        "value": "us.timinc.mc.cobblemon.timcore.fabric.TimCoreFabric"
+        "value": "us.timinc.mc.timcore.fabric.TimCoreFabric"
       }
     ]
   },

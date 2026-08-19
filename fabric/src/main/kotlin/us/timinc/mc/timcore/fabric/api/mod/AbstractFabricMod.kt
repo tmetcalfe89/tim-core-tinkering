@@ -1,4 +1,4 @@
-package us.timinc.mc.cobblemon.timcore.fabric.api.mod
+package us.timinc.mc.timcore.fabric.api.mod
 
 import net.fabricmc.api.ModInitializer
 import us.timinc.mc.timcore.api.mod.AbstractMod

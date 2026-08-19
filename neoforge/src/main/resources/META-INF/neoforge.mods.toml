@@ -5,7 +5,7 @@ issueTrackerURL="${modIssues}"
 
 [[mods]]
 modId = "${modId}"
-version = "${modCobblemonVersion}-neoforge-${modMyVersion}"
+version = "${modMyVersion}-neoforge"
 displayName = "${modName}"
 authors = "${modAuthor}"
 description = "${modDescription}"

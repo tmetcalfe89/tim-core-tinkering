@@ -1,4 +1,4 @@
-package us.timinc.mc.cobblemon.timcore.neoforge.api.mod
+package us.timinc.mc.timcore.neoforge.api.mod
 
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries

@@ -1,4 +1,4 @@
-package us.timinc.mc.cobblemon.timcore.neoforge.api.mod
+package us.timinc.mc.timcore.neoforge.api.mod
 
 import us.timinc.mc.timcore.api.mod.AbstractMod
 

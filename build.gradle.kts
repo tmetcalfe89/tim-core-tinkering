@@ -11,7 +11,7 @@ allprojects {
     apply(plugin = "java")
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
-    version = "${project.property("modCobblemonVersion")!!}-${project.property("modMyVersion")!!}"
+    version = project.property("modMyVersion")!!
     group = project.property("maven_group")!!
 
     repositories {

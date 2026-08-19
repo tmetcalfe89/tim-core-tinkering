@@ -1,4 +1,4 @@
-package us.timinc.mc.cobblemon.timcore.fabric.api.mod
+package us.timinc.mc.timcore.fabric.api.mod
 
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
 import net.fabricmc.loader.api.FabricLoader
