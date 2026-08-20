@@ -20,7 +20,8 @@
   "depends": {
     "java": ">=21",
     "minecraft": "${minecraft_version}",
-    "fabric": "*"
+    "fabric": "*",
+    "fabric-language-kotlin": ">=${fabric_kotlin}"
   },
   "conflicts": {
     "cobblemon": "<${cobblemon_version}"
