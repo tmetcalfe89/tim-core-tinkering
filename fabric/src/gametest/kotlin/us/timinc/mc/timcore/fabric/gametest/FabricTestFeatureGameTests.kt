@@ -18,4 +18,7 @@ class FabricTestFeatureGameTests : FabricGameTest {
 
     @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
     fun createsTestBlockEntity(helper: GameTestHelper) = TestFeatureGameTests.createsTestBlockEntity(helper)
+
+    @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
+    fun registersTagItemDropEntry(helper: GameTestHelper) = TestFeatureGameTests.registersTagItemDropEntry(helper)
 }

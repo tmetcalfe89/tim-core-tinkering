@@ -25,4 +25,8 @@ object NeoForgeTestFeatureGameTests {
     @JvmStatic
     @GameTest(template = "empty")
     fun createsTestBlockEntity(helper: GameTestHelper) = TestFeatureGameTests.createsTestBlockEntity(helper)
+
+    @JvmStatic
+    @GameTest(template = "empty")
+    fun registersTagItemDropEntry(helper: GameTestHelper) = TestFeatureGameTests.registersTagItemDropEntry(helper)
 }
