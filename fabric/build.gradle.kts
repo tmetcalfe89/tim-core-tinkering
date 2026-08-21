@@ -58,7 +58,21 @@ tasks.getByName<Test>("test") {
 }
 
 tasks.processResources {
-    inputs.property("version", project.version)
+    inputs.properties(
+        listOf(
+            "modId",
+            "modMyVersion",
+            "modName",
+            "modDescription",
+            "modAuthor",
+            "modIssues",
+            "modSource",
+            "modDiscord",
+            "minecraft_version",
+            "fabric_kotlin",
+            "cobblemon_version",
+        ).associateWith(project::property),
+    )
 
     filesMatching("fabric.mod.json") {
         expand(project.properties)

@@ -60,7 +60,21 @@ tasks.getByName<Test>("test") {
 }
 
 tasks.processResources {
-    inputs.property("version", project.version)
+    inputs.properties(
+        listOf(
+            "modId",
+            "modMyVersion",
+            "modName",
+            "modDescription",
+            "modAuthor",
+            "modIssues",
+            "modSource",
+            "modDiscord",
+            "minecraft_version",
+            "neoforge_version",
+            "cobblemon_version",
+        ).associateWith(project::property),
+    )
 
     filesMatching("META-INF/neoforge.mods.toml") {
         expand(project.properties)
