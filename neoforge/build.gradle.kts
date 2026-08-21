@@ -14,6 +14,42 @@ loom {
     silentMojangMappingsLicense()
 }
 
+val gametest = sourceSets.create("gametest") {
+    kotlin.srcDir(project(":common").file("src/gametest/kotlin"))
+    resources.srcDir(project(":common").file("src/gametest/resources"))
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
+}
+configurations.named(gametest.compileClasspathConfigurationName) {
+    extendsFrom(configurations[sourceSets.main.get().compileClasspathConfigurationName])
+}
+configurations.named(gametest.runtimeClasspathConfigurationName) {
+    extendsFrom(configurations[sourceSets.main.get().runtimeClasspathConfigurationName])
+}
+loom.createRemapConfigurations(gametest)
+loom.mods.named("main") {
+    sourceSet(gametest)
+}
+loom.runs.create("gameTestServer") {
+    environment("gameTestServer")
+    forgeTemplate("gameTestServer")
+    source(gametest)
+    runDir("build/run/gameTest")
+    property("neoforge.enabledGameTestNamespaces", "tim_core_gametest")
+    ideConfigGenerated(false)
+}
+
+val prepareGameTestRun by tasks.registering(Copy::class) {
+    from(project(":common").file("src/gametest/config")) {
+        into("config")
+    }
+    from(project(":common").file("src/gametest/resources/data/tim_core_gametest/gametest/structure")) {
+        include("*.snbt")
+        into("gameteststructures")
+    }
+    into(layout.buildDirectory.dir("run/gameTest"))
+}
+
 repositories {
     mavenCentral()
     maven("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
@@ -56,7 +92,12 @@ dependencies {
 }
 
 tasks.getByName<Test>("test") {
+    dependsOn("runGameTestServer")
     useJUnitPlatform()
+}
+
+tasks.named<JavaExec>("runGameTestServer") {
+    dependsOn(prepareGameTestRun)
 }
 
 tasks.processResources {

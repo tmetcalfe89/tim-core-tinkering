@@ -27,6 +27,14 @@ object TestBlock : AbstractFeature<TimCore, TestBlock.Config>(
                     BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
                 )
             )
+        val BLOCK_WITHOUT_ITEM =
+            MinecraftModule.registerBlock(
+                mod.modResource("block_without_item"),
+                BlockContainer.Basic(
+                    BlockBehaviour.Properties.ofFullCopy(Blocks.STONE),
+                    ignoreItem = true,
+                )
+            )
     }
 
     override fun initialize() {

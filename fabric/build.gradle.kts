@@ -17,6 +17,32 @@ loom {
         defaultRefmapName.set("mixins.${project.name}.refmap.json")
     }
 }
+
+fabricApi.configureTests {
+    createSourceSet.set(true)
+    modId.set("tim_core_gametest")
+    enableClientGameTests.set(false)
+}
+
+sourceSets.named("gametest") {
+    kotlin.srcDir(project(":common").file("src/gametest/kotlin"))
+    resources.srcDir(project(":common").file("src/gametest/resources"))
+}
+
+val prepareGameTestConfig by tasks.registering(Copy::class) {
+    from(project(":common").file("src/gametest/config"))
+    into(layout.buildDirectory.dir("run/gameTest/config"))
+}
+
+// Cobblemon's Showdown bootstrap needs ICU on both the GameTest process classpath
+// and the test mod's Fabric classpath group. Keep it isolated from published artifacts.
+val gametestRuntimeLibraries = configurations.create("gametestRuntimeLibraries")
+gametestRuntimeLibraries.isCanBeConsumed = false
+gametestRuntimeLibraries.isCanBeResolved = true
+configurations.named("gametestRuntimeOnly") {
+    extendsFrom(gametestRuntimeLibraries)
+}
+
 val shadowCommon = configurations.create("shadowCommon")
 shadowCommon.isCanBeConsumed = false
 shadowCommon.isCanBeResolved = true
@@ -47,14 +73,25 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${property("junit_version")}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${property("junit_version")}")
+    "modGametestImplementation"(fabricApi.module("fabric-gametest-api-v1", property("fabric_api_version").toString()))
+    gametestRuntimeLibraries("com.ibm.icu:icu4j:73.2")
 
     runtimeOnly("org.graalvm.sdk:graal-sdk:${property("graal_version")}")
     runtimeOnly("org.graalvm.truffle:truffle-api:${property("graal_version")}")
     runtimeOnly("org.graalvm.js:js:${property("graal_version")}")
 }
 
+loom.mods.named("tim_core_gametest") {
+    configuration(gametestRuntimeLibraries)
+}
+
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+tasks.named<JavaExec>("runGameTest") {
+    dependsOn(prepareGameTestConfig)
+    classpath(gametestRuntimeLibraries)
 }
 
 tasks.processResources {

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "tim_core_gametest",
+  "version": "1.0.0",
+  "name": "Tim Core Fabric Game Tests",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      {
+        "adapter": "kotlin",
+        "value": "us.timinc.mc.timcore.fabric.gametest.FabricTestFeatureGameTests"
+      }
+    ]
+  },
+  "depends": {
+    "fabricloader": "*",
+    "fabric-gametest-api-v1": "*",
+    "fabric-language-kotlin": "*",
+    "minecraft": "1.21.1",
+    "tim_core": "*"
+  }
+}
