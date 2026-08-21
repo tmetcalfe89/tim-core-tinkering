@@ -1,4 +1,4 @@
-rootProject.name = "cobblemon-tim-core"
+rootProject.name = "tim-core"
 
 pluginManagement {
     repositories {
