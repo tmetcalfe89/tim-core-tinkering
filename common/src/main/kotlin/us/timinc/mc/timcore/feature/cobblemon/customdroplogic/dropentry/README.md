@@ -11,6 +11,7 @@ Base mod has a drop type that drops an item with optional data on it. Someone re
         "amount": 1,
         "entries": [
             {
+                "type": "item_tag",
                 "itemTag": "minecraft:fishes"
             }
         ]
