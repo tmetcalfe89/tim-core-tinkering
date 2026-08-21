@@ -70,21 +70,27 @@ open class TagItemDropEntry : DropEntry {
 
             if (dropMethod == ItemDropMethod.ON_PLAYER && player != null) {
                 world.addFreshEntity(ItemEntity(player.level(), player.x, player.y, player.z, stack))
-                logger.sing("Drop method is on player, but there is no player, dropped in world.")
+                logger.sing("Drop method is on player, dropped on player.")
             } else if (dropMethod == ItemDropMethod.TO_INVENTORY && player != null && !stack.isEmpty) {
                 val name = stack.hoverName
                 val count = stack.count
-                val succeeded = player.addItem(stack)
+                val addedAny = player.addItem(stack)
+                val remainingCount = stack.count
+                if (!stack.isEmpty) {
+                    world.addFreshEntity(ItemEntity(player.level(), player.x, player.y, player.z, stack))
+                }
                 if (Cobblemon.config.announceDropItems) {
                     player.sendSystemMessage(
-                        if (succeeded) lang("drop.item.inventory", count, name.copy().green())
+                        if (remainingCount == 0) lang("drop.item.inventory", count, name.copy().green())
                         else lang("drop.item.full", name).red()
                     )
                 }
-                if (succeeded) {
+                if (remainingCount == 0) {
                     logger.sing("Drop method is to inventory, dropped to player's inventory.")
+                } else if (addedAny) {
+                    logger.sing("Drop method is to inventory, added ${count - remainingCount} to the player's inventory and dropped the remaining $remainingCount on the player.")
                 } else {
-                    logger.sing("Drop method is to inventory, but player's inventory was full.")
+                    logger.sing("Drop method is to inventory, but player's inventory was full; dropped $remainingCount on the player.")
                 }
             } else if (dropMethod == ItemDropMethod.ON_ENTITY && entity != null) {
                 world.addFreshEntity(ItemEntity(entity.level(), entity.x, entity.y, entity.z, stack))
