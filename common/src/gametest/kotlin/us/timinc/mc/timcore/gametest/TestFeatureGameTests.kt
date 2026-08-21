@@ -1,12 +1,15 @@
 package us.timinc.mc.timcore.gametest
 
 import com.cobblemon.mod.common.api.drop.DropEntry
+import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
+import com.cobblemon.mod.common.pokemon.Pokemon
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.gametest.framework.GameTestHelper
 import net.minecraft.world.level.block.entity.BlockEntity
 import us.timinc.mc.timcore.TimCore
 import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.dropentry.TagItemDropEntry
+import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam
 import us.timinc.mc.timcore.feature.test.block.TestBlock
 import us.timinc.mc.timcore.feature.test.blockentity.TestBlockEntity
 import us.timinc.mc.timcore.feature.test.blockentity.block.entity.CounterBlockEntity
@@ -88,6 +91,32 @@ object TestFeatureGameTests {
         helper.assertTrue(
             DropEntry.getByName("item_tag") === TagItemDropEntry::class.java,
             "Custom drop logic did not register the item_tag drop entry with Cobblemon",
+        )
+        helper.succeed()
+    }
+
+    fun persistsQuickBallImmunityProperty(helper: GameTestHelper) {
+        val immunityProperty = PreventQuickBallSpam.PokemonProperties.immuneToQuickBall
+        helper.assertTrue(
+            CustomPokemonProperty.properties.any { it === immunityProperty },
+            "The quick-ball immunity property was not registered with Cobblemon",
+        )
+
+        val pokemon = Pokemon()
+        helper.assertTrue(
+            !immunityProperty.getValue(pokemon),
+            "A new Pokemon was unexpectedly immune to Quick Balls",
+        )
+
+        val parsedProperty = immunityProperty.fromString("yes")
+        parsedProperty.apply(pokemon)
+        helper.assertTrue(
+            immunityProperty.getValue(pokemon),
+            "Quick-ball immunity was not stored in the Pokemon's persistent data",
+        )
+        helper.assertTrue(
+            parsedProperty.matches(pokemon),
+            "The applied quick-ball immunity property did not match the Pokemon",
         )
         helper.succeed()
     }

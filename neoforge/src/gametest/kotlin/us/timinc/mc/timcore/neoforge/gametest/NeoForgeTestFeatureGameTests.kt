@@ -29,4 +29,9 @@ object NeoForgeTestFeatureGameTests {
     @JvmStatic
     @GameTest(template = "empty")
     fun registersTagItemDropEntry(helper: GameTestHelper) = TestFeatureGameTests.registersTagItemDropEntry(helper)
+
+    @JvmStatic
+    @GameTest(template = "empty")
+    fun persistsQuickBallImmunityProperty(helper: GameTestHelper) =
+        TestFeatureGameTests.persistsQuickBallImmunityProperty(helper)
 }

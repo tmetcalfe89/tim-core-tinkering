@@ -21,4 +21,8 @@ class FabricTestFeatureGameTests : FabricGameTest {
 
     @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
     fun registersTagItemDropEntry(helper: GameTestHelper) = TestFeatureGameTests.registersTagItemDropEntry(helper)
+
+    @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
+    fun persistsQuickBallImmunityProperty(helper: GameTestHelper) =
+        TestFeatureGameTests.persistsQuickBallImmunityProperty(helper)
 }
