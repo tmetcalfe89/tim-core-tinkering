@@ -33,3 +33,13 @@ allprojects {
     }
 }
 
+// The root project only coordinates the platform subprojects. Its archives
+// contain no mod code or metadata and can be mistaken for distributable mods.
+tasks.named("jar") {
+    enabled = false
+}
+
+tasks.named("sourcesJar") {
+    enabled = false
+}
+
