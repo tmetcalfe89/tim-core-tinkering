@@ -28,6 +28,7 @@ runServer
 forge*changelog.txt
 /showdown/
 /logs/
+/common/logs/
 .vscode/launch.json
 .vscode
 common/src/main/resources/assets/cobblemon/showdown

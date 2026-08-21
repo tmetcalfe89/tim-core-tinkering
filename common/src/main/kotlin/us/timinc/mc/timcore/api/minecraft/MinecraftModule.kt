@@ -15,20 +15,14 @@ import us.timinc.mc.timcore.api.module.AbstractModule
  * @author Timothy Metcalfe
  */
 object MinecraftModule : AbstractModule<TimCore>(TimCore, "minecraft") {
-    private val items: MutableMap<ResourceLocation, ItemContainer<*>> = mutableMapOf()
-    private val blocks: MutableMap<ResourceLocation, BlockContainer<*>> = mutableMapOf()
-    private var initialized: Boolean = false
+    private val registrations = MinecraftRegistrationQueue()
 
     override fun init(platformBits: PlatformBits) {
-        if (items.isNotEmpty()) {
-            logger.sing("Registering ${items.size} items.")
-            platformBits.registerItems(items)
-        }
-        if (blocks.isNotEmpty()) {
-            logger.sing("Registering ${blocks.size} blocks.")
-            platformBits.registerBlocks(blocks)
-        }
-        initialized = true
+        registrations.initialize(
+            platformBits,
+            onRegisteringItems = { count -> logger.sing("Registering $count items.") },
+            onRegisteringBlocks = { count -> logger.sing("Registering $count blocks.") },
+        )
     }
 
     /**
@@ -39,21 +33,15 @@ object MinecraftModule : AbstractModule<TimCore>(TimCore, "minecraft") {
      * @throws [IllegalStateException] If there's already an item registered with that ID.
      * @see us.timinc.mc.timcore.feature.test.item.TestItem
      */
-    fun <T : Item> registerItem(id: ResourceLocation, container: ItemContainer<T>) : ItemContainer<T> {
-        if (initialized) throw IllegalStateException("Minecraft module already initialized.")
-        if (items.containsKey(id)) throw IllegalStateException("Item $id already registered.")
-
-        logger.sing("Adding item $id to be registered.")
-        items[id] = container
-        return container
+    fun <T : Item> registerItem(id: ResourceLocation, container: ItemContainer<T>): ItemContainer<T> {
+        return registrations.registerItem(id, container) {
+            logger.sing("Adding item $id to be registered.")
+        }
     }
 
-    fun <T : Block, C : BlockContainer<T>> registerBlock(id: ResourceLocation, container: C) : C {
-        if (initialized) throw IllegalStateException("Minecraft module already initialized.")
-        if (blocks.containsKey(id)) throw IllegalStateException("Block $id already registered.")
-
-        logger.sing("Adding block $id to be registered.")
-        blocks[id] = container
-        return container
+    fun <T : Block, C : BlockContainer<T>> registerBlock(id: ResourceLocation, container: C): C {
+        return registrations.registerBlock(id, container) {
+            logger.sing("Adding block $id to be registered.")
+        }
     }
 }
