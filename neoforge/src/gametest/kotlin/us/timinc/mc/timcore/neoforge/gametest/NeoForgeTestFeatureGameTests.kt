@@ -34,4 +34,9 @@ object NeoForgeTestFeatureGameTests {
     @GameTest(template = "empty")
     fun persistsQuickBallImmunityProperty(helper: GameTestHelper) =
         TestFeatureGameTests.persistsQuickBallImmunityProperty(helper)
+
+    @JvmStatic
+    @GameTest(template = "empty")
+    fun ignoresCatchRateEventsWithoutQuickBallBonus(helper: GameTestHelper) =
+        TestFeatureGameTests.ignoresCatchRateEventsWithoutQuickBallBonus(helper)
 }

@@ -25,4 +25,8 @@ class FabricTestFeatureGameTests : FabricGameTest {
     @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
     fun persistsQuickBallImmunityProperty(helper: GameTestHelper) =
         TestFeatureGameTests.persistsQuickBallImmunityProperty(helper)
+
+    @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
+    fun ignoresCatchRateEventsWithoutQuickBallBonus(helper: GameTestHelper) =
+        TestFeatureGameTests.ignoresCatchRateEventsWithoutQuickBallBonus(helper)
 }

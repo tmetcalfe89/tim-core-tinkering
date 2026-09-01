@@ -1,11 +1,17 @@
 package us.timinc.mc.timcore.gametest
 
 import com.cobblemon.mod.common.api.drop.DropEntry
+import com.cobblemon.mod.common.api.events.CobblemonEvents
+import com.cobblemon.mod.common.api.events.pokeball.PokemonCatchRateEvent
+import com.cobblemon.mod.common.api.pokeball.PokeBalls
 import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
+import com.cobblemon.mod.common.entity.pokeball.EmptyPokeBallEntity
+import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.cobblemon.mod.common.pokemon.Pokemon
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.gametest.framework.GameTestHelper
+import net.minecraft.world.level.GameType
 import net.minecraft.world.level.block.entity.BlockEntity
 import us.timinc.mc.timcore.TimCore
 import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.dropentry.TagItemDropEntry
@@ -117,6 +123,46 @@ object TestFeatureGameTests {
         helper.assertTrue(
             parsedProperty.matches(pokemon),
             "The applied quick-ball immunity property did not match the Pokemon",
+        )
+        helper.succeed()
+    }
+
+    fun ignoresCatchRateEventsWithoutQuickBallBonus(helper: GameTestHelper) {
+        val thrower = helper.makeMockPlayer(GameType.SURVIVAL)
+        val pokemon = Pokemon()
+        val pokemonEntity = PokemonEntity(helper.level, pokemon)
+        val initialCatchRate = 120F
+
+        val regularBallEvent = PokemonCatchRateEvent(
+            thrower,
+            EmptyPokeBallEntity(PokeBalls.POKE_BALL, helper.level, thrower),
+            pokemonEntity,
+            initialCatchRate,
+        )
+        CobblemonEvents.POKEMON_CATCH_RATE.post(regularBallEvent)
+        helper.assertTrue(
+            regularBallEvent.catchRate == initialCatchRate,
+            "A non-Quick Ball unexpectedly changed the catch rate",
+        )
+        helper.assertTrue(
+            !PreventQuickBallSpam.PokemonProperties.immuneToQuickBall.getValue(pokemon),
+            "A non-Quick Ball unexpectedly granted Quick Ball immunity",
+        )
+
+        val outOfBattleQuickBallEvent = PokemonCatchRateEvent(
+            thrower,
+            EmptyPokeBallEntity(PokeBalls.QUICK_BALL, helper.level, thrower),
+            pokemonEntity,
+            initialCatchRate,
+        )
+        CobblemonEvents.POKEMON_CATCH_RATE.post(outOfBattleQuickBallEvent)
+        helper.assertTrue(
+            outOfBattleQuickBallEvent.catchRate == initialCatchRate,
+            "An out-of-battle Quick Ball unexpectedly changed the catch rate",
+        )
+        helper.assertTrue(
+            !PreventQuickBallSpam.PokemonProperties.immuneToQuickBall.getValue(pokemon),
+            "An out-of-battle Quick Ball unexpectedly granted immunity",
         )
         helper.succeed()
     }
