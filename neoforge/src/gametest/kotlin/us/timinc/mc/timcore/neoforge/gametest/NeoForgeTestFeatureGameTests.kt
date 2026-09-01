@@ -37,6 +37,11 @@ object NeoForgeTestFeatureGameTests {
 
     @JvmStatic
     @GameTest(template = "empty")
+    fun requiresPartyToFishPokemon(helper: GameTestHelper) =
+        TestFeatureGameTests.requiresPartyToFishPokemon(helper, FishingSpawnActionFixture::create)
+
+    @JvmStatic
+    @GameTest(template = "empty")
     fun persistsQuickBallImmunityProperty(helper: GameTestHelper) =
         TestFeatureGameTests.persistsQuickBallImmunityProperty(helper)
 
