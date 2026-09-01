@@ -1,30 +1,38 @@
 package us.timinc.mc.timcore.gametest
 
+import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.drop.DropEntry
 import com.cobblemon.mod.common.api.events.CobblemonEvents
+import com.cobblemon.mod.common.api.events.fishing.BobberSpawnPokemonEvent
 import com.cobblemon.mod.common.api.events.pokemon.EvGainedEvent
 import com.cobblemon.mod.common.api.events.pokeball.PokemonCatchRateEvent
 import com.cobblemon.mod.common.api.pokeball.PokeBalls
 import com.cobblemon.mod.common.api.pokemon.stats.SidemodEvSource
 import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
+import com.cobblemon.mod.common.api.spawning.detail.SpawnAction
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore
+import com.cobblemon.mod.common.entity.fishing.PokeRodFishingBobberEntity
 import com.cobblemon.mod.common.battles.BattleBuilder
 import com.cobblemon.mod.common.battles.SuccessfulBattleStart
 import com.cobblemon.mod.common.entity.pokeball.EmptyPokeBallEntity
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.cobblemon.mod.common.pokemon.Pokemon
+import com.cobblemon.mod.common.util.party
 import com.mojang.authlib.GameProfile
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.gametest.framework.GameTestHelper
+import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ClientInformation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.level.GameType
 import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.item.ItemStack
 import us.timinc.mc.timcore.TimCore
 import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.dropentry.TagItemDropEntry
 import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam
+import us.timinc.mc.timcore.feature.cobblemon.requirepartytofishpokemon.handler.PartyRequiredFishingHandler
 import us.timinc.mc.timcore.feature.test.block.TestBlock
 import us.timinc.mc.timcore.feature.test.blockentity.TestBlockEntity
 import us.timinc.mc.timcore.feature.test.blockentity.block.entity.CounterBlockEntity
@@ -129,6 +137,58 @@ object TestFeatureGameTests {
             !event.isCanceled,
             "A non-zero multiplied EV gain was unexpectedly canceled",
         )
+        helper.succeed()
+    }
+
+    fun requiresPartyToFishPokemon(
+        helper: GameTestHelper,
+        createSpawnAction: (GameTestHelper, ServerPlayer, ItemStack) -> SpawnAction<*>,
+    ) {
+        val feedback = mutableListOf<Component>()
+        val player = object : ServerPlayer(
+                helper.level.server,
+                helper.level,
+                GameProfile(UUID.randomUUID(), "tim-core-fishing-gametest"),
+                ClientInformation.createDefault(),
+            ) {
+                override fun sendSystemMessage(message: Component) {
+                    feedback += message
+                }
+            }
+        val party = player.party()
+        helper.assertTrue(party.isEmpty(), "The fishing test player unexpectedly started with a Pokémon")
+
+        val rod = ItemStack(CobblemonItems.POKE_ROD)
+        val bobber = PokeRodFishingBobberEntity(
+            player,
+            BuiltInRegistries.ITEM.getKey(CobblemonItems.POKE_ROD),
+            ItemStack.EMPTY,
+            helper.level,
+            0,
+            0,
+            rod,
+        )
+        val spawnAction = createSpawnAction(helper, player, rod)
+
+        val emptyPartyEvent = BobberSpawnPokemonEvent.Pre(bobber, spawnAction, rod)
+        CobblemonEvents.BOBBER_SPAWN_POKEMON_PRE.post(emptyPartyEvent)
+        helper.assertTrue(
+            emptyPartyEvent.isCanceled,
+            "A player with an empty party was allowed to fish a Pokémon",
+        )
+        helper.assertTrue(
+            feedback.singleOrNull() == Component.translatable(PartyRequiredFishingHandler.FEEDBACK_KEY),
+            "An empty-party fishing attempt did not send the expected feedback",
+        )
+
+        party.add(Pokemon())
+        val populatedPartyEvent = BobberSpawnPokemonEvent.Pre(bobber, spawnAction, rod)
+        CobblemonEvents.BOBBER_SPAWN_POKEMON_PRE.post(populatedPartyEvent)
+        helper.assertTrue(
+            !populatedPartyEvent.isCanceled,
+            "A player with a Pokémon in their party was prevented from fishing",
+        )
+        helper.assertTrue(feedback.size == 1, "An allowed fishing attempt unexpectedly sent feedback")
         helper.succeed()
     }
 
