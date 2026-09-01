@@ -8,7 +8,7 @@ object EvGainMultiplierHandler {
         EvGainMultiplier.withOperationContext {
             val multiplier = config.multiplier
             if (!multiplier.isFinite() || multiplier < 0.0) {
-                logger.warn("EV gain multiplier must be a finite, non-negative number; ignoring $multiplier.")
+                logger.alert("EV gain multiplier must be a finite, non-negative number; ignoring $multiplier.")
                 return
             }
 
