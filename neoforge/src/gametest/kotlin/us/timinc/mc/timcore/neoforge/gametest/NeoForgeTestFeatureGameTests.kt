@@ -32,6 +32,11 @@ object NeoForgeTestFeatureGameTests {
 
     @JvmStatic
     @GameTest(template = "empty")
+    fun multipliesEvGainThroughCobblemonEvent(helper: GameTestHelper) =
+        TestFeatureGameTests.multipliesEvGainThroughCobblemonEvent(helper)
+
+    @JvmStatic
+    @GameTest(template = "empty")
     fun persistsQuickBallImmunityProperty(helper: GameTestHelper) =
         TestFeatureGameTests.persistsQuickBallImmunityProperty(helper)
 

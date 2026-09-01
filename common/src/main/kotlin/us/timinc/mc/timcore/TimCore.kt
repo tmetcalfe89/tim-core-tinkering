@@ -5,6 +5,7 @@ import us.timinc.mc.timcore.api.mod.AbstractMod
 import us.timinc.mc.timcore.api.mod.ModConfig
 import us.timinc.mc.timcore.api.mod.PlatformBits
 import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.CustomDropLogic
+import us.timinc.mc.timcore.feature.cobblemon.evgainmultiplier.EvGainMultiplier
 import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam
 import us.timinc.mc.timcore.feature.test.block.TestBlock
 import us.timinc.mc.timcore.feature.test.blockentity.TestBlockEntity
@@ -21,6 +22,7 @@ object TimCore : AbstractMod<TimCore.Config>(MOD_ID, Config::class) {
         // Reference your features in the initialization of your mod to wake them up.
         PreventQuickBallSpam
         CustomDropLogic
+        EvGainMultiplier
         TestItem
         TestBlock
         TestBlockEntity
