@@ -1,0 +1,52 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Gradle build and GameTests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: basic
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      - name: Build and test
+        run: ./gradlew clean build --no-daemon --no-parallel --console=plain --stacktrace
+
+      - name: Upload failure reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-failure-${{ github.run_id }}
+          path: |
+            **/build/reports/
+            fabric/build/run/gameTest/logs/
+            neoforge/build/run/gameTest/logs/
+          if-no-files-found: ignore
+          retention-days: 7
