@@ -2,8 +2,11 @@ package us.timinc.mc.timcore.gametest
 
 import com.cobblemon.mod.common.api.drop.DropEntry
 import com.cobblemon.mod.common.api.events.CobblemonEvents
+import com.cobblemon.mod.common.api.events.pokemon.EvGainedEvent
 import com.cobblemon.mod.common.api.events.pokeball.PokemonCatchRateEvent
 import com.cobblemon.mod.common.api.pokeball.PokeBalls
+import com.cobblemon.mod.common.api.pokemon.stats.SidemodEvSource
+import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore
 import com.cobblemon.mod.common.battles.BattleBuilder
@@ -104,6 +107,27 @@ object TestFeatureGameTests {
         helper.assertTrue(
             DropEntry.getByName("item_tag") === TagItemDropEntry::class.java,
             "Custom drop logic did not register the item_tag drop entry with Cobblemon",
+        )
+        helper.succeed()
+    }
+
+    fun multipliesEvGainThroughCobblemonEvent(helper: GameTestHelper) {
+        val pokemon = Pokemon()
+        val event = EvGainedEvent.Pre(
+            Stats.ATTACK,
+            7,
+            SidemodEvSource(TimCore.modId, pokemon),
+        )
+
+        CobblemonEvents.EV_GAINED_EVENT_PRE.post(event)
+
+        helper.assertTrue(
+            event.amount == 3,
+            "The configured 0.5 EV multiplier produced ${event.amount} EVs instead of 3",
+        )
+        helper.assertTrue(
+            !event.isCanceled,
+            "A non-zero multiplied EV gain was unexpectedly canceled",
         )
         helper.succeed()
     }

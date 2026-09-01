@@ -23,6 +23,10 @@ class FabricTestFeatureGameTests : FabricGameTest {
     fun registersTagItemDropEntry(helper: GameTestHelper) = TestFeatureGameTests.registersTagItemDropEntry(helper)
 
     @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
+    fun multipliesEvGainThroughCobblemonEvent(helper: GameTestHelper) =
+        TestFeatureGameTests.multipliesEvGainThroughCobblemonEvent(helper)
+
+    @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
     fun persistsQuickBallImmunityProperty(helper: GameTestHelper) =
         TestFeatureGameTests.persistsQuickBallImmunityProperty(helper)
 
