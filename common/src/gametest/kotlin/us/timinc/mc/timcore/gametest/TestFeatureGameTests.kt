@@ -10,7 +10,12 @@ import com.cobblemon.mod.common.api.pokeball.PokeBalls
 import com.cobblemon.mod.common.api.pokemon.stats.SidemodEvSource
 import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
+import com.cobblemon.mod.common.api.spawning.BestSpawner
+import com.cobblemon.mod.common.api.spawning.detail.PokemonSpawnDetail
 import com.cobblemon.mod.common.api.spawning.detail.SpawnAction
+import com.cobblemon.mod.common.api.spawning.fishing.FishingSpawnCause
+import com.cobblemon.mod.common.api.spawning.position.FishingSpawnablePosition
+import com.cobblemon.mod.common.api.spawning.selection.SpawnSelectionData
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore
 import com.cobblemon.mod.common.entity.fishing.PokeRodFishingBobberEntity
 import com.cobblemon.mod.common.battles.BattleBuilder
@@ -37,6 +42,7 @@ import us.timinc.mc.timcore.feature.test.block.TestBlock
 import us.timinc.mc.timcore.feature.test.blockentity.TestBlockEntity
 import us.timinc.mc.timcore.feature.test.blockentity.block.entity.CounterBlockEntity
 import us.timinc.mc.timcore.feature.test.item.TestItem
+import java.lang.reflect.Proxy
 import java.util.UUID
 
 object TestFeatureGameTests {
@@ -140,10 +146,7 @@ object TestFeatureGameTests {
         helper.succeed()
     }
 
-    fun requiresPartyToFishPokemon(
-        helper: GameTestHelper,
-        createSpawnAction: (GameTestHelper, ServerPlayer, ItemStack) -> SpawnAction<*>,
-    ) {
+    fun requiresPartyToFishPokemon(helper: GameTestHelper) {
         val feedback = mutableListOf<Component>()
         val player = object : ServerPlayer(
                 helper.level.server,
@@ -168,7 +171,7 @@ object TestFeatureGameTests {
             0,
             rod,
         )
-        val spawnAction = createSpawnAction(helper, player, rod)
+        val spawnAction = createFishingSpawnAction(helper, player, rod)
 
         val emptyPartyEvent = BobberSpawnPokemonEvent.Pre(bobber, spawnAction, rod)
         CobblemonEvents.BOBBER_SPAWN_POKEMON_PRE.post(emptyPartyEvent)
@@ -190,6 +193,38 @@ object TestFeatureGameTests {
         )
         helper.assertTrue(feedback.size == 1, "An allowed fishing attempt unexpectedly sent feedback")
         helper.succeed()
+    }
+
+    private fun createFishingSpawnAction(
+        helper: GameTestHelper,
+        player: ServerPlayer,
+        rod: ItemStack,
+    ): SpawnAction<*> {
+        val cause = FishingSpawnCause(BestSpawner.fishingSpawner, player, rod, 0)
+        val position = FishingSpawnablePosition(cause, helper.level, BlockPos(1, 1, 1), mutableListOf())
+        val detail = PokemonSpawnDetail()
+        val createSpawnAction = PokemonSpawnDetail::class.java.declaredMethods.single {
+            it.name == "createSpawnAction" && !it.isBridge
+        }.apply { isAccessible = true }
+        val bucketType = createSpawnAction.parameterTypes[1]
+        val bucket = if (bucketType == String::class.java) {
+            "common"
+        } else {
+            check(bucketType.name == "com.cobblemon.mod.common.api.spawning.SpawnBucket") {
+                "Unsupported Cobblemon spawn bucket type: ${bucketType.name}"
+            }
+            bucketType
+                .getConstructor(String::class.java, Float::class.javaPrimitiveType!!)
+                .newInstance("common", 1F)
+        }
+        val selectionData = Proxy.newProxyInstance(
+            SpawnSelectionData::class.java.classLoader,
+            arrayOf(SpawnSelectionData::class.java),
+        ) { _, method, _ ->
+            error("The fishing GameTest does not use SpawnSelectionData.${method.name}().")
+        }
+
+        return createSpawnAction.invoke(detail, position, bucket, selectionData) as SpawnAction<*>
     }
 
     fun persistsQuickBallImmunityProperty(helper: GameTestHelper) {

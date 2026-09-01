@@ -28,7 +28,7 @@ class FabricTestFeatureGameTests : FabricGameTest {
 
     @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
     fun requiresPartyToFishPokemon(helper: GameTestHelper) =
-        TestFeatureGameTests.requiresPartyToFishPokemon(helper, FishingSpawnActionFixture::create)
+        TestFeatureGameTests.requiresPartyToFishPokemon(helper)
 
     @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
     fun persistsQuickBallImmunityProperty(helper: GameTestHelper) =
