@@ -11,10 +11,11 @@ import com.cobblemon.mod.common.api.pokemon.stats.SidemodEvSource
 import com.cobblemon.mod.common.api.pokemon.stats.Stats
 import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
 import com.cobblemon.mod.common.api.spawning.BestSpawner
-import com.cobblemon.mod.common.api.spawning.detail.PokemonSpawnDetail
 import com.cobblemon.mod.common.api.spawning.detail.SpawnAction
+import com.cobblemon.mod.common.api.spawning.detail.SpawnDetail
 import com.cobblemon.mod.common.api.spawning.fishing.FishingSpawnCause
 import com.cobblemon.mod.common.api.spawning.position.FishingSpawnablePosition
+import com.cobblemon.mod.common.api.spawning.position.SpawnablePosition
 import com.cobblemon.mod.common.api.spawning.selection.SpawnSelectionData
 import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore
 import com.cobblemon.mod.common.entity.fishing.PokeRodFishingBobberEntity
@@ -31,9 +32,10 @@ import net.minecraft.gametest.framework.GameTestHelper
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ClientInformation
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.GameType
 import net.minecraft.world.level.block.entity.BlockEntity
-import net.minecraft.world.item.ItemStack
 import us.timinc.mc.timcore.TimCore
 import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.dropentry.TagItemDropEntry
 import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam
@@ -42,7 +44,6 @@ import us.timinc.mc.timcore.feature.test.block.TestBlock
 import us.timinc.mc.timcore.feature.test.blockentity.TestBlockEntity
 import us.timinc.mc.timcore.feature.test.blockentity.block.entity.CounterBlockEntity
 import us.timinc.mc.timcore.feature.test.item.TestItem
-import java.lang.reflect.Proxy
 import java.util.UUID
 
 object TestFeatureGameTests {
@@ -202,29 +203,19 @@ object TestFeatureGameTests {
     ): SpawnAction<*> {
         val cause = FishingSpawnCause(BestSpawner.fishingSpawner, player, rod, 0)
         val position = FishingSpawnablePosition(cause, helper.level, BlockPos(1, 1, 1), mutableListOf())
-        val detail = PokemonSpawnDetail()
-        val createSpawnAction = PokemonSpawnDetail::class.java.declaredMethods.single {
-            it.name == "createSpawnAction" && !it.isBridge
-        }.apply { isAccessible = true }
-        val bucketType = createSpawnAction.parameterTypes[1]
-        val bucket = if (bucketType == String::class.java) {
-            "common"
-        } else {
-            check(bucketType.name == "com.cobblemon.mod.common.api.spawning.SpawnBucket") {
-                "Unsupported Cobblemon spawn bucket type: ${bucketType.name}"
-            }
-            bucketType
-                .getConstructor(String::class.java, Float::class.javaPrimitiveType!!)
-                .newInstance("common", 1F)
-        }
-        val selectionData = Proxy.newProxyInstance(
-            SpawnSelectionData::class.java.classLoader,
-            arrayOf(SpawnSelectionData::class.java),
-        ) { _, method, _ ->
-            error("The fishing GameTest does not use SpawnSelectionData.${method.name}().")
+        val detail = object : SpawnDetail() {
+            override val type = "tim_core_gametest"
+
+            override fun createSpawnAction(
+                spawnablePosition: SpawnablePosition,
+                bucket: String,
+                selectionData: SpawnSelectionData,
+            ): SpawnAction<*> = error("The fishing GameTest does not select this synthetic spawn detail.")
         }
 
-        return createSpawnAction.invoke(detail, position, bucket, selectionData) as SpawnAction<*>
+        return object : SpawnAction<Entity>(position, "common", detail) {
+            override fun run(): Entity? = null
+        }
     }
 
     fun persistsQuickBallImmunityProperty(helper: GameTestHelper) {
