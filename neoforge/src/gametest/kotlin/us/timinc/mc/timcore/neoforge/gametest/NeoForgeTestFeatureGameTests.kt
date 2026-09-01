@@ -38,7 +38,7 @@ object NeoForgeTestFeatureGameTests {
     @JvmStatic
     @GameTest(template = "empty")
     fun requiresPartyToFishPokemon(helper: GameTestHelper) =
-        TestFeatureGameTests.requiresPartyToFishPokemon(helper, FishingSpawnActionFixture::create)
+        TestFeatureGameTests.requiresPartyToFishPokemon(helper)
 
     @JvmStatic
     @GameTest(template = "empty")
