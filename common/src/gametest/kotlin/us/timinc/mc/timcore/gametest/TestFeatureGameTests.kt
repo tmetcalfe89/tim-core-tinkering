@@ -5,12 +5,18 @@ import com.cobblemon.mod.common.api.events.CobblemonEvents
 import com.cobblemon.mod.common.api.events.pokeball.PokemonCatchRateEvent
 import com.cobblemon.mod.common.api.pokeball.PokeBalls
 import com.cobblemon.mod.common.api.properties.CustomPokemonProperty
+import com.cobblemon.mod.common.api.storage.party.PlayerPartyStore
+import com.cobblemon.mod.common.battles.BattleBuilder
+import com.cobblemon.mod.common.battles.SuccessfulBattleStart
 import com.cobblemon.mod.common.entity.pokeball.EmptyPokeBallEntity
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity
 import com.cobblemon.mod.common.pokemon.Pokemon
+import com.mojang.authlib.GameProfile
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.gametest.framework.GameTestHelper
+import net.minecraft.server.level.ClientInformation
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.level.GameType
 import net.minecraft.world.level.block.entity.BlockEntity
 import us.timinc.mc.timcore.TimCore
@@ -20,6 +26,7 @@ import us.timinc.mc.timcore.feature.test.block.TestBlock
 import us.timinc.mc.timcore.feature.test.blockentity.TestBlockEntity
 import us.timinc.mc.timcore.feature.test.blockentity.block.entity.CounterBlockEntity
 import us.timinc.mc.timcore.feature.test.item.TestItem
+import java.util.UUID
 
 object TestFeatureGameTests {
     const val EMPTY_TEMPLATE = "tim_core_gametest:empty"
@@ -165,5 +172,76 @@ object TestFeatureGameTests {
             "An out-of-battle Quick Ball unexpectedly granted immunity",
         )
         helper.succeed()
+    }
+
+    fun preventsRepeatedTurnOneQuickBallBonus(helper: GameTestHelper) {
+        val thrower = ServerPlayer(
+            helper.level.server,
+            helper.level,
+            GameProfile(UUID.randomUUID(), "tim-core-gametest"),
+            ClientInformation.createDefault(),
+        )
+        val playerParty = PlayerPartyStore(thrower.uuid).apply { add(Pokemon()) }
+        val pokemon = Pokemon()
+        val pokemonEntity = PokemonEntity(helper.level, pokemon)
+        val battleStart = BattleBuilder.pve(
+            player = thrower,
+            pokemonEntity = pokemonEntity,
+            fleeDistance = -1F,
+            party = playerParty,
+        )
+        helper.assertTrue(
+            battleStart is SuccessfulBattleStart,
+            "Cobblemon did not start the turn-one test battle",
+        )
+
+        val battle = (battleStart as SuccessfulBattleStart).battle
+        try {
+            battle.turn(1)
+            val quickBall = PokeBalls.QUICK_BALL
+            val quickBallEntity = EmptyPokeBallEntity(quickBall, helper.level, thrower)
+            val initialCatchRate = 120F
+            val quickBallFactor = quickBall.catchRateModifier.modifyCatchRate(1F, thrower, pokemon)
+            helper.assertTrue(
+                quickBallFactor == 5F,
+                "Cobblemon's turn-one Quick Ball modifier was unexpectedly $quickBallFactor instead of 5",
+            )
+
+            val firstQuickBallEvent = PokemonCatchRateEvent(
+                thrower,
+                quickBallEntity,
+                pokemonEntity,
+                initialCatchRate,
+            )
+            CobblemonEvents.POKEMON_CATCH_RATE.post(firstQuickBallEvent)
+            helper.assertTrue(
+                firstQuickBallEvent.catchRate == initialCatchRate,
+                "A Pokemon's first turn-one Quick Ball unexpectedly lost its bonus",
+            )
+            helper.assertTrue(
+                PreventQuickBallSpam.PokemonProperties.immuneToQuickBall.getValue(pokemon),
+                "The first boosted Quick Ball did not grant immunity to later attempts",
+            )
+
+            val repeatedQuickBallEvent = PokemonCatchRateEvent(
+                thrower,
+                quickBallEntity,
+                pokemonEntity,
+                initialCatchRate,
+            )
+            CobblemonEvents.POKEMON_CATCH_RATE.post(repeatedQuickBallEvent)
+            helper.assertTrue(
+                repeatedQuickBallEvent.catchRate == initialCatchRate / quickBallFactor,
+                "A repeated turn-one Quick Ball did not remove its bonus from the catch rate",
+            )
+            helper.assertTrue(
+                quickBall.catchRateModifier.modifyCatchRate(repeatedQuickBallEvent.catchRate, thrower, pokemon) ==
+                    initialCatchRate,
+                "Cobblemon's Quick Ball modifier did not restore the repeated attempt to the base catch rate",
+            )
+            helper.succeed()
+        } finally {
+            if (!battle.ended) battle.stop()
+        }
     }
 }

@@ -39,4 +39,9 @@ object NeoForgeTestFeatureGameTests {
     @GameTest(template = "empty")
     fun ignoresCatchRateEventsWithoutQuickBallBonus(helper: GameTestHelper) =
         TestFeatureGameTests.ignoresCatchRateEventsWithoutQuickBallBonus(helper)
+
+    @JvmStatic
+    @GameTest(template = "empty")
+    fun preventsRepeatedTurnOneQuickBallBonus(helper: GameTestHelper) =
+        TestFeatureGameTests.preventsRepeatedTurnOneQuickBallBonus(helper)
 }

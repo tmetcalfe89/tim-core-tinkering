@@ -29,4 +29,8 @@ class FabricTestFeatureGameTests : FabricGameTest {
     @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
     fun ignoresCatchRateEventsWithoutQuickBallBonus(helper: GameTestHelper) =
         TestFeatureGameTests.ignoresCatchRateEventsWithoutQuickBallBonus(helper)
+
+    @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
+    fun preventsRepeatedTurnOneQuickBallBonus(helper: GameTestHelper) =
+        TestFeatureGameTests.preventsRepeatedTurnOneQuickBallBonus(helper)
 }
