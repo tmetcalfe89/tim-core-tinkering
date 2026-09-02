@@ -27,6 +27,9 @@ class FabricTestFeatureGameTests : FabricGameTest {
         TestFeatureGameTests.multipliesEvGainThroughCobblemonEvent(helper)
 
     @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
+    fun awardsExpAllExperience(helper: GameTestHelper) = TestFeatureGameTests.awardsExpAllExperience(helper)
+
+    @GameTest(template = TestFeatureGameTests.EMPTY_TEMPLATE)
     fun requiresPartyToFishPokemon(helper: GameTestHelper) =
         TestFeatureGameTests.requiresPartyToFishPokemon(helper)
 

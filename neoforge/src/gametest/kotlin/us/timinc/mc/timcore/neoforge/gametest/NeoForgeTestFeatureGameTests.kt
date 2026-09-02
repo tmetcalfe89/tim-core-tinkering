@@ -37,6 +37,10 @@ object NeoForgeTestFeatureGameTests {
 
     @JvmStatic
     @GameTest(template = "empty")
+    fun awardsExpAllExperience(helper: GameTestHelper) = TestFeatureGameTests.awardsExpAllExperience(helper)
+
+    @JvmStatic
+    @GameTest(template = "empty")
     fun requiresPartyToFishPokemon(helper: GameTestHelper) =
         TestFeatureGameTests.requiresPartyToFishPokemon(helper)
 

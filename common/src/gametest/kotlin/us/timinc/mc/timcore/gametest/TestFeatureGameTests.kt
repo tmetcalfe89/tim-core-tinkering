@@ -1,8 +1,10 @@
 package us.timinc.mc.timcore.gametest
 
+import com.cobblemon.mod.common.Cobblemon
 import com.cobblemon.mod.common.CobblemonItems
 import com.cobblemon.mod.common.api.drop.DropEntry
 import com.cobblemon.mod.common.api.events.CobblemonEvents
+import com.cobblemon.mod.common.api.events.battles.BattleVictoryEvent
 import com.cobblemon.mod.common.api.events.fishing.BobberSpawnPokemonEvent
 import com.cobblemon.mod.common.api.events.pokemon.EvGainedEvent
 import com.cobblemon.mod.common.api.events.pokeball.PokemonCatchRateEvent
@@ -37,7 +39,12 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.GameType
 import net.minecraft.world.level.block.entity.BlockEntity
 import us.timinc.mc.timcore.TimCore
+import us.timinc.mc.timcore.api.event.Subscription
 import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.dropentry.TagItemDropEntry
+import us.timinc.mc.timcore.feature.cobblemon.expall.ExpAll
+import us.timinc.mc.timcore.feature.cobblemon.expall.event.CheckExpAllEvent
+import us.timinc.mc.timcore.feature.cobblemon.expall.handler.ExpAllHandler
+import us.timinc.mc.timcore.feature.cobblemon.expall.hasExpAllFor
 import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam
 import us.timinc.mc.timcore.feature.cobblemon.requirepartytofishpokemon.handler.PartyRequiredFishingHandler
 import us.timinc.mc.timcore.feature.test.block.TestBlock
@@ -145,6 +152,97 @@ object TestFeatureGameTests {
             "A non-zero multiplied EV gain was unexpectedly canceled",
         )
         helper.succeed()
+    }
+
+    fun awardsExpAllExperience(helper: GameTestHelper) {
+        val player = ServerPlayer(
+            helper.level.server,
+            helper.level,
+            GameProfile(UUID.randomUUID(), "tim-core-exp-all-gametest"),
+            ClientInformation.createDefault(),
+        )
+        helper.assertTrue(
+            player.inventory.add(ItemStack(TestItem.ModItems.BASIC_TEST_ITEM.item)),
+            "The Exp All test item could not be added to the player's inventory",
+        )
+
+        val participant = Pokemon()
+        val recipient = Pokemon()
+        val deniedByHook = Pokemon()
+        val expShareHolder = Pokemon().apply {
+            swapHeldItem(ItemStack(CobblemonItems.EXP_SHARE), decrement = false)
+        }
+        val playerParty = PlayerPartyStore(player.uuid).apply {
+            add(participant)
+            add(recipient)
+            add(deniedByHook)
+            add(expShareHolder)
+        }
+        val opponent = Pokemon()
+        val battleStart = BattleBuilder.pve(
+            player = player,
+            pokemonEntity = PokemonEntity(helper.level, opponent),
+            fleeDistance = -1F,
+            party = playerParty,
+        )
+        helper.assertTrue(battleStart is SuccessfulBattleStart, "Cobblemon did not start the Exp All test battle")
+
+        val battle = (battleStart as SuccessfulBattleStart).battle
+        val playerActor = battle.actors.single { it.uuid == player.uuid }
+        val opponentActor = battle.actors.single { it.uuid == opponent.uuid }
+        val participantBattlePokemon = playerActor.pokemonList.single { it.originalPokemon === participant }
+        val recipientBattlePokemon = playerActor.pokemonList.single { it.originalPokemon === recipient }
+        val opponentBattlePokemon = opponentActor.pokemonList.single()
+        participantBattlePokemon.facedOpponents += opponentBattlePokemon
+
+        helper.assertTrue(
+            player.hasExpAllFor(recipient),
+            "An item in #tim_core:exp_all did not grant Exp All access",
+        )
+        val denialSubscription = Subscription<CheckExpAllEvent, Unit>(
+            TimCore.modResource("gametest/exp_all/deny"),
+        ) { event ->
+            if (event.pokemon === deniedByHook) event.hasExpAll = false
+        }
+        ExpAll.Events.CHECK_ELIGIBILITY.subscribe(denialSubscription)
+
+        val participantExperience = participant.experience
+        val recipientExperience = recipient.experience
+        val deniedExperience = deniedByHook.experience
+        val expShareExperience = expShareHolder.experience
+        val expectedAward = Cobblemon.experienceCalculator.calculate(
+            recipientBattlePokemon,
+            opponentBattlePokemon,
+            ExpAll.config.values.multiplier,
+        )
+
+        try {
+            ExpAllHandler.awardExperience(
+                BattleVictoryEvent(battle, listOf(playerActor), listOf(opponentActor), false),
+            ) { player }
+
+            helper.assertTrue(expectedAward > 0, "Cobblemon calculated a non-positive Exp All test award")
+            helper.assertTrue(
+                recipient.experience == recipientExperience + expectedAward,
+                "The eligible non-participant did not receive the configured Exp All award",
+            )
+            helper.assertTrue(
+                participant.experience == participantExperience,
+                "A participating Pokémon received duplicate Exp All experience",
+            )
+            helper.assertTrue(
+                deniedByHook.experience == deniedExperience,
+                "The eligibility hook did not prevent an Exp All award",
+            )
+            helper.assertTrue(
+                expShareHolder.experience == expShareExperience,
+                "An Exp Share holder received duplicate Exp All experience",
+            )
+            helper.succeed()
+        } finally {
+            ExpAll.Events.CHECK_ELIGIBILITY.unsubscribe(denialSubscription)
+            if (!battle.ended) battle.stop()
+        }
     }
 
     fun requiresPartyToFishPokemon(helper: GameTestHelper) {
