@@ -6,6 +6,7 @@ import us.timinc.mc.timcore.api.mod.ModConfig
 import us.timinc.mc.timcore.api.mod.PlatformBits
 import us.timinc.mc.timcore.feature.cobblemon.customdroplogic.CustomDropLogic
 import us.timinc.mc.timcore.feature.cobblemon.evgainmultiplier.EvGainMultiplier
+import us.timinc.mc.timcore.feature.cobblemon.expall.ExpAll
 import us.timinc.mc.timcore.feature.cobblemon.preventquickballspam.PreventQuickBallSpam
 import us.timinc.mc.timcore.feature.cobblemon.requirepartytofishpokemon.RequirePartyToFishPokemon
 import us.timinc.mc.timcore.feature.test.block.TestBlock
@@ -24,6 +25,7 @@ object TimCore : AbstractMod<TimCore.Config>(MOD_ID, Config::class) {
         PreventQuickBallSpam
         CustomDropLogic
         EvGainMultiplier
+        ExpAll
         RequirePartyToFishPokemon
         TestItem
         TestBlock
